@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3DSource Org Chart</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #ebedf0;
+      color: #1a1a2e;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ---- TOOLBAR ---- */
+    #toolbar {
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    #toolbar h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin-right: auto;
+    }
+
+    #toolbar button {
+      padding: 6px 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 13px;
+      color: #333;
+      transition: background 0.15s;
+    }
+
+    #toolbar button:hover { background: #f5f5f5; }
+
+    #btn-admin {
+      background: #4a90d9 !important;
+      color: #fff !important;
+      border-color: #3a7bc8 !important;
+    }
+
+    #btn-admin:hover { background: #3a7bc8 !important; }
+
+    #search-box {
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 13px;
+      width: 200px;
+      outline: none;
+    }
+
+    #search-box:focus { border-color: #4a90d9; box-shadow: 0 0 0 2px rgba(74,144,217,0.2); }
+
+    /* ---- STATS BAR ---- */
+    #stats {
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a1a2e;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 500;
+    }
+
+    .stat-divider {
+      width: 1px;
+      height: 28px;
+      background: #e0e0e0;
+    }
+
+    .dept-stats {
+      display: flex;
+      gap: 12px;
+      margin-left: auto;
+    }
+
+    .dept-stat {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #555;
+    }
+
+    .dept-stat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .dept-stat-count {
+      color: #1a1a2e;
+      font-weight: 700;
+    }
+
+    /* ---- MAIN CONTENT ---- */
+    #main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* ---- VIEWPORT ---- */
+    #viewport {
+      flex: 1;
+      margin: 16px;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      background: #f7f8fa;
+      overflow: hidden;
+      position: relative;
+      box-shadow: inset 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    #canvas {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      cursor: grab;
+    }
+
+    #canvas.grabbing { cursor: grabbing; }
+
+    #chart-container {
+      transform-origin: 0 0;
+      will-change: transform;
+      padding: 40px;
+      display: inline-block;
+    }
+
+    /* ---- LEGEND ---- */
+    #legend {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      z-index: 10;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(8px);
+      border-radius: 8px;
+      padding: 8px 12px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 500;
+      color: #555;
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    /* ---- ADMIN PANEL ---- */
+    #admin-panel {
+      width: 380px;
+      background: #fff;
+      border-left: 1px solid #ddd;
+      display: none;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    #admin-panel.open {
+      display: flex;
+    }
+
+    #admin-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    #admin-header h2 {
+      font-size: 15px;
+      font-weight: 700;
+      flex: 1;
+    }
+
+    #admin-header button {
+      padding: 5px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 12px;
+      color: #333;
+      transition: background 0.15s;
+    }
+
+    #admin-header button:hover { background: #f5f5f5; }
+
+    .btn-primary {
+      background: #10b981 !important;
+      color: #fff !important;
+      border-color: #059669 !important;
+    }
+
+    .btn-primary:hover { background: #059669 !important; }
+
+    .btn-danger {
+      background: #ef4444 !important;
+      color: #fff !important;
+      border-color: #dc2626 !important;
+    }
+
+    .btn-danger:hover { background: #dc2626 !important; }
+
+    .btn-save-sheet {
+      background: #4a90d9 !important;
+      color: #fff !important;
+      border-color: #3a7bc8 !important;
+    }
+
+    .btn-save-sheet:hover { background: #3a7bc8 !important; }
+
+    #admin-actions {
+      padding: 12px 20px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    #admin-search {
+      padding: 6px 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 12px;
+      flex: 1;
+      outline: none;
+    }
+
+    #admin-search:focus { border-color: #4a90d9; }
+
+    #admin-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0;
+    }
+
+    .admin-emp-item {
+      padding: 10px 20px;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+      transition: background 0.1s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .admin-emp-item:hover { background: #f7f8fa; }
+    .admin-emp-item.selected { background: #eef2ff; }
+
+    .admin-emp-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .admin-emp-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .admin-emp-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a1a2e;
+    }
+
+    .admin-emp-role {
+      font-size: 11px;
+      color: #888;
+    }
+
+    /* ---- EDIT FORM (modal overlay) ---- */
+    #edit-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #edit-overlay.open { display: flex; }
+
+    #edit-form {
+      background: #fff;
+      border-radius: 12px;
+      padding: 28px 32px;
+      width: 420px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+
+    #edit-form h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 13px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #4a90d9;
+      box-shadow: 0 0 0 2px rgba(74,144,217,0.2);
+    }
+
+    .form-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+      justify-content: flex-end;
+    }
+
+    .form-buttons button {
+      padding: 8px 18px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+
+    .form-buttons button:hover { background: #f5f5f5; }
+
+    /* ---- SYNC STATUS ---- */
+    #sync-bar {
+      padding: 8px 20px;
+      border-top: 1px solid #eee;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      font-size: 11px;
+      color: #888;
+    }
+
+    #sync-bar .sync-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+    }
+
+    #sync-bar .sync-dot.unsaved { background: #f59e0b; }
+    #sync-bar .sync-dot.saving { background: #4a90d9; animation: pulse 1s infinite; }
+    #sync-bar .sync-dot.error { background: #ef4444; }
+
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    /* ---- TREE LAYOUT ---- */
+    .tree {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .tree .children {
+      display: flex;
+      justify-content: center;
+      position: relative;
+    }
+
+    .tree .child-branch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      padding: 14px 4px 0;
+    }
+
+    .tree .child-branch::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: calc(50% - 1px);
+      width: 2px;
+      height: 14px;
+      background: #c0c8d4;
+    }
+
+    .tree .child-branch::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      height: 2px;
+      background: #c0c8d4;
+    }
+
+    .tree .children > .child-branch:first-child::after {
+      left: 50%;
+      right: 0;
+    }
+
+    .tree .children > .child-branch:last-child::after {
+      left: 0;
+      right: 50%;
+    }
+
+    .tree .children > .child-branch:only-child::after {
+      display: none;
+    }
+
+    .tree .children > .child-branch:not(:first-child):not(:last-child)::after {
+      left: 0;
+      right: 0;
+    }
+
+    .connector-down {
+      width: 2px;
+      height: 14px;
+      background: #c0c8d4;
+      margin: 0 auto;
+    }
+
+    .role-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ---- NODE CARDS ---- */
+    .node {
+      background: #fff;
+      border-radius: 8px;
+      padding: 8px 10px;
+      width: 140px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      border-left: 3px solid #ccc;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .node:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    }
+
+    .node.highlight {
+      box-shadow: 0 0 0 3px #fbbf24, 0 6px 20px rgba(0,0,0,0.15);
+      transform: translateY(-2px);
+    }
+
+    .node.dimmed { opacity: 0.3; }
+
+    .node .name {
+      font-weight: 700;
+      font-size: 11px;
+      margin-bottom: 2px;
+      color: #1a1a2e;
+    }
+
+    .node .role {
+      font-size: 9.5px;
+      color: #666;
+      margin-bottom: 3px;
+    }
+
+    .node .dept {
+      font-size: 8px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 1px 6px;
+      border-radius: 8px;
+      display: inline-block;
+    }
+
+    .node .count-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #4a90d9;
+      color: #fff;
+      font-size: 9px;
+      font-weight: 700;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+
+    /* ---- DEPARTMENT COLORS ---- */
+    .dept-exec { border-left-color: #6366f1; }
+    .dept-exec .dept { background: #eef2ff; color: #4338ca; }
+
+    .dept-dev { border-left-color: #10b981; }
+    .dept-dev .dept { background: #ecfdf5; color: #047857; }
+
+    .dept-3d { border-left-color: #f59e0b; }
+    .dept-3d .dept { background: #fffbeb; color: #b45309; }
+
+    .dept-qa { border-left-color: #ef4444; }
+    .dept-qa .dept { background: #fef2f2; color: #b91c1c; }
+
+    .dept-mgmt { border-left-color: #8b5cf6; }
+    .dept-mgmt .dept { background: #f5f3ff; color: #6d28d9; }
+
+    .dept-design { border-left-color: #ec4899; }
+    .dept-design .dept { background: #fdf2f8; color: #be185d; }
+
+    .dept-hr { border-left-color: #14b8a6; }
+    .dept-hr .dept { background: #f0fdfa; color: #0f766e; }
+
+    .dept-it { border-left-color: #64748b; }
+    .dept-it .dept { background: #f1f5f9; color: #334155; }
+
+    /* ---- LOADING / ERROR ---- */
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ebedf0;
+      z-index: 1000;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #e5e7eb;
+      border-top-color: #4a90d9;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #error {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #ebedf0;
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    #error h2 { color: #ef4444; }
+    #error p { color: #666; max-width: 500px; text-align: center; }
+
+    /* ---- TOAST ---- */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1a1a2e;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      z-index: 600;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loading">
+    <div class="spinner"></div>
+    <div style="color:#666; font-size:14px;">Loading org chart...</div>
+  </div>
+
+  <div id="error">
+    <h2>Failed to load data</h2>
+    <p id="error-msg"></p>
+  </div>
+
+  <div id="toolbar">
+    <h1>3DSource Org Chart</h1>
+    <input type="text" id="search-box" placeholder="Search employees..." />
+    <button onclick="zoomIn()">+ Zoom In</button>
+    <button onclick="zoomOut()">- Zoom Out</button>
+    <button onclick="resetView()">Reset View</button>
+    <button id="btn-admin" onclick="toggleAdmin()">Admin</button>
+  </div>
+
+  <div id="stats"></div>
+
+  <div id="main">
+    <div id="viewport">
+      <div id="canvas">
+        <div id="chart-container"></div>
+      </div>
+      <div id="legend"></div>
+    </div>
+
+    <div id="admin-panel">
+      <div id="admin-header">
+        <h2>Manage Employees</h2>
+        <button class="btn-primary" onclick="openAddForm()">+ Add</button>
+        <button class="btn-save-sheet" onclick="saveToSheet()">Save to Sheet</button>
+      </div>
+      <div id="admin-actions">
+        <input type="text" id="admin-search" placeholder="Filter employees..." oninput="renderAdminList()" />
+      </div>
+      <div id="admin-list"></div>
+      <div id="sync-bar">
+        <div class="sync-dot" id="sync-dot"></div>
+        <span id="sync-status">Synced with Google Sheets</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit/Add Modal -->
+  <div id="edit-overlay" onclick="if(event.target===this)closeEditForm()">
+    <div id="edit-form">
+      <h3 id="form-title">Edit Employee</h3>
+      <input type="hidden" id="form-original-id" />
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="form-name" placeholder="e.g. Jane Smith" />
+      </div>
+      <div class="form-group">
+        <label>Role / Title</label>
+        <input type="text" id="form-role" placeholder="e.g. Front End Dev" />
+      </div>
+      <div class="form-group">
+        <label>Department</label>
+        <select id="form-dept">
+          <option value="Exec">Exec</option>
+          <option value="Dev">Dev</option>
+          <option value="3D">3D</option>
+          <option value="QA">QA</option>
+          <option value="MGMT">MGMT</option>
+          <option value="Design">Design</option>
+          <option value="HR">HR</option>
+          <option value="IT">IT</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Reports To</label>
+        <select id="form-manager"></select>
+      </div>
+      <div class="form-buttons">
+        <button id="form-delete-btn" class="btn-danger" onclick="deleteEmployee()" style="margin-right:auto">Delete</button>
+        <button onclick="closeEditForm()">Cancel</button>
+        <button class="btn-primary" onclick="saveEmployee()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    // ---- CONFIG ----
+    // Paste your deployed Apps Script Web App URL here (see AppsScript.gs for setup instructions)
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhKsWU7A-354CPixvyBEmZhZQIno98eGg4Fi7ji0SmvPyeM74woIEJVAJNNs4bpwU7/exec'; // e.g. 'https://script.google.com/macros/s/XXXXX/exec'
+
+    // Fallback: Sheets API (read-only, used if APPS_SCRIPT_URL is not set)
+    const SPREADSHEET_ID = '1o_0n8K7dqYrW0ytjRBUN0AUIe1uJQe_-j4bRJof-MI4';
+    const API_KEY = 'AIzaSyAv6nCz3plTICq4biUMmh9YKGOtkFOx-qI';
+
+    const DEPT_COLORS = {
+      'Exec':   { border: '#6366f1', bg: '#eef2ff', text: '#4338ca', dot: '#6366f1' },
+      'Dev':    { border: '#10b981', bg: '#ecfdf5', text: '#047857', dot: '#10b981' },
+      '3D':     { border: '#f59e0b', bg: '#fffbeb', text: '#b45309', dot: '#f59e0b' },
+      'QA':     { border: '#ef4444', bg: '#fef2f2', text: '#b91c1c', dot: '#ef4444' },
+      'MGMT':   { border: '#8b5cf6', bg: '#f5f3ff', text: '#6d28d9', dot: '#8b5cf6' },
+      'Design': { border: '#ec4899', bg: '#fdf2f8', text: '#be185d', dot: '#ec4899' },
+      'HR':     { border: '#14b8a6', bg: '#f0fdfa', text: '#0f766e', dot: '#14b8a6' },
+      'IT':     { border: '#64748b', bg: '#f1f5f9', text: '#334155', dot: '#64748b' },
+    };
+
+    // ---- STATE ----
+    let scale = 1;
+    let translateX = 0;
+    let translateY = 0;
+    let isDragging = false;
+    let dragStartX, dragStartY;
+    let employees = {};
+    let childrenMap = {};
+    let rootEmp = null;
+    let hasUnsavedChanges = false;
+    let adminUnlocked = sessionStorage.getItem('admin_unlocked') === '1';
+    // Obfuscated password check
+    const _ak = [100,114,101,97,109,115,111,102,116];
+
+    function checkAdminPassword() {
+      if (adminUnlocked) return true;
+      const input = prompt('Enter admin password:');
+      if (!input) return false;
+      const match = input.split('').every((c, i) => c.charCodeAt(0) === _ak[i]) && input.length === _ak.length;
+      if (match) {
+        adminUnlocked = true;
+        sessionStorage.setItem('admin_unlocked', '1');
+        showToast('Admin access granted');
+        return true;
+      }
+      showToast('Incorrect password');
+      return false;
+    }
+
+    // ---- TOAST ----
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    // ---- FETCH DATA ----
+    async function fetchData() {
+      if (APPS_SCRIPT_URL) {
+        // Use Apps Script API
+        const res = await fetch(APPS_SCRIPT_URL);
+        if (!res.ok) throw new Error(`Apps Script returned ${res.status}`);
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Failed to load data');
+        return data.employees;
+      } else {
+        // Fallback: Sheets API (read-only)
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/A1:E100?key=${API_KEY}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`API returned ${res.status}: ${res.statusText}`);
+        const data = await res.json();
+        return parseRows(data.values);
+      }
+    }
+
+    function parseRows(rows) {
+      const emps = [];
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        if (!row || !row[0]) continue;
+        emps.push({
+          id: row[0],
+          name: row[1] || '',
+          role: row[2] || '',
+          department: row[3] || '',
+          managerId: row[4] || '',
+        });
+      }
+      return emps;
+    }
+
+    function indexEmployees(empList) {
+      const emps = {};
+      for (const emp of empList) {
+        emps[emp.id] = emp;
+      }
+      return emps;
+    }
+
+    function buildTree(emps) {
+      let root = null;
+      const cMap = {};
+
+      for (const id in emps) {
+        const emp = emps[id];
+        const managerId = emp.managerId;
+        if (!managerId || managerId === '\u2014' || managerId === '-' || !emps[managerId]) {
+          root = emp;
+        } else {
+          if (!cMap[managerId]) cMap[managerId] = [];
+          cMap[managerId].push(emp);
+        }
+      }
+
+      for (const id in cMap) {
+        cMap[id].sort((a, b) => {
+          const aHasKids = cMap[a.id] ? 1 : 0;
+          const bHasKids = cMap[b.id] ? 1 : 0;
+          if (bHasKids !== aHasKids) return bHasKids - aHasKids;
+          return a.name.localeCompare(b.name);
+        });
+      }
+
+      return { root, childrenMap: cMap };
+    }
+
+    function countReports(id, cMap) {
+      const direct = cMap[id] || [];
+      let total = direct.length;
+      for (const child of direct) {
+        total += countReports(child.id, cMap);
+      }
+      return total;
+    }
+
+    function generateId(name) {
+      return name.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+    }
+
+    // ---- REBUILD & RE-RENDER ----
+    function rebuild() {
+      const result = buildTree(employees);
+      rootEmp = result.root;
+      childrenMap = result.childrenMap;
+
+      renderStats(employees, childrenMap);
+      const container = document.getElementById('chart-container');
+      container.innerHTML = renderNode(rootEmp, childrenMap);
+      renderLegend();
+      renderAdminList();
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => centerChart());
+      });
+    }
+
+    // ---- STATS ----
+    function renderStats(emps, cMap) {
+      const total = Object.keys(emps).length;
+      const deptCounts = {};
+      for (const id in emps) {
+        const d = emps[id].department;
+        deptCounts[d] = (deptCounts[d] || 0) + 1;
+      }
+      const numDepts = Object.keys(deptCounts).length;
+      let numManagers = 0;
+      for (const id in cMap) {
+        if (cMap[id].length > 0) numManagers++;
+      }
+      const roles = new Set();
+      for (const id in emps) roles.add(emps[id].role);
+
+      let html = '';
+      html += `<div class="stat-item"><span class="stat-value">${total}</span><span class="stat-label">Headcount</span></div>`;
+      html += `<div class="stat-divider"></div>`;
+      html += `<div class="stat-item"><span class="stat-value">${numDepts}</span><span class="stat-label">Departments</span></div>`;
+      html += `<div class="stat-divider"></div>`;
+      html += `<div class="stat-item"><span class="stat-value">${numManagers}</span><span class="stat-label">Managers</span></div>`;
+      html += `<div class="stat-divider"></div>`;
+      html += `<div class="stat-item"><span class="stat-value">${roles.size}</span><span class="stat-label">Roles</span></div>`;
+
+      html += `<div class="dept-stats">`;
+      const sortedDepts = Object.entries(deptCounts).sort((a, b) => b[1] - a[1]);
+      for (const [dept, count] of sortedDepts) {
+        const color = DEPT_COLORS[dept] ? DEPT_COLORS[dept].dot : '#999';
+        html += `<div class="dept-stat">
+          <div class="dept-stat-dot" style="background:${color}"></div>
+          ${dept} <span class="dept-stat-count">${count}</span>
+        </div>`;
+      }
+      html += `</div>`;
+      document.getElementById('stats').innerHTML = html;
+    }
+
+    // ---- RENDER CHART ----
+    function deptClass(dept) {
+      return 'dept-' + dept.toLowerCase().replace(/\s+/g, '');
+    }
+
+    function renderCardHTML(emp, cMap) {
+      const totalReports = countReports(emp.id, cMap);
+      const badgeHTML = totalReports > 0
+        ? `<div class="count-badge" title="${totalReports} total reports">${totalReports}</div>`
+        : '';
+      return `<div class="node ${deptClass(emp.department)}" data-id="${emp.id}" data-name="${emp.name.toLowerCase()}">
+        ${badgeHTML}
+        <div class="name">${emp.name}</div>
+        <div class="role">${emp.role}</div>
+        <div class="dept">${emp.department}</div>
+      </div>`;
+    }
+
+    function renderNode(emp, cMap) {
+      const kids = cMap[emp.id] || [];
+      let html = `<div class="tree">`;
+      html += renderCardHTML(emp, cMap);
+
+      if (kids.length > 0) {
+        const managers = kids.filter(k => cMap[k.id] && cMap[k.id].length > 0);
+        const leaves = kids.filter(k => !cMap[k.id] || cMap[k.id].length === 0);
+        const roleGroups = {};
+        for (const leaf of leaves) {
+          const role = leaf.role;
+          if (!roleGroups[role]) roleGroups[role] = [];
+          roleGroups[role].push(leaf);
+        }
+        const groupedLeaves = Object.values(roleGroups);
+
+        html += `<div class="connector-down"></div>`;
+        html += `<div class="children">`;
+        for (const child of managers) {
+          html += `<div class="child-branch">`;
+          html += renderNode(child, cMap);
+          html += `</div>`;
+        }
+        for (const group of groupedLeaves) {
+          html += `<div class="child-branch">`;
+          html += `<div class="role-group">`;
+          for (const leaf of group) {
+            html += renderCardHTML(leaf, cMap);
+          }
+          html += `</div>`;
+          html += `</div>`;
+        }
+        html += `</div>`;
+      }
+
+      html += `</div>`;
+      return html;
+    }
+
+    function renderLegend() {
+      const legend = document.getElementById('legend');
+      let html = '';
+      for (const dept in DEPT_COLORS) {
+        const c = DEPT_COLORS[dept];
+        html += `<div class="legend-item">
+          <div class="legend-dot" style="background:${c.dot}"></div>
+          ${dept}
+        </div>`;
+      }
+      legend.innerHTML = html;
+    }
+
+    // ---- ADMIN PANEL ----
+    function toggleAdmin() {
+      const panel = document.getElementById('admin-panel');
+      if (!panel.classList.contains('open')) {
+        if (!checkAdminPassword()) return;
+      }
+      panel.classList.toggle('open');
+      setTimeout(() => centerChart(), 50);
+    }
+
+    function renderAdminList() {
+      const list = document.getElementById('admin-list');
+      const filter = (document.getElementById('admin-search').value || '').toLowerCase();
+
+      const sorted = Object.values(employees).sort((a, b) => a.name.localeCompare(b.name));
+      let html = '';
+      for (const emp of sorted) {
+        if (filter && !emp.name.toLowerCase().includes(filter) && !emp.role.toLowerCase().includes(filter) && !emp.department.toLowerCase().includes(filter)) continue;
+        const color = DEPT_COLORS[emp.department] ? DEPT_COLORS[emp.department].dot : '#999';
+        html += `<div class="admin-emp-item" onclick="openEditForm('${emp.id}')">
+          <div class="admin-emp-dot" style="background:${color}"></div>
+          <div class="admin-emp-info">
+            <div class="admin-emp-name">${emp.name}</div>
+            <div class="admin-emp-role">${emp.role} &middot; ${emp.department}</div>
+          </div>
+        </div>`;
+      }
+      list.innerHTML = html;
+    }
+
+    // ---- EDIT FORM ----
+    function populateManagerDropdown(excludeId) {
+      const select = document.getElementById('form-manager');
+      const sorted = Object.values(employees).sort((a, b) => a.name.localeCompare(b.name));
+      let html = `<option value="">(None - top of org)</option>`;
+      for (const emp of sorted) {
+        if (emp.id === excludeId) continue;
+        html += `<option value="${emp.id}">${emp.name} (${emp.role})</option>`;
+      }
+      select.innerHTML = html;
+    }
+
+    function openEditForm(empId) {
+      const emp = employees[empId];
+      if (!emp) return;
+
+      document.getElementById('form-title').textContent = 'Edit Employee';
+      document.getElementById('form-original-id').value = empId;
+      document.getElementById('form-name').value = emp.name;
+      document.getElementById('form-role').value = emp.role;
+      document.getElementById('form-dept').value = emp.department;
+      document.getElementById('form-delete-btn').style.display = '';
+
+      populateManagerDropdown(empId);
+      document.getElementById('form-manager').value = emp.managerId || '';
+
+      document.getElementById('edit-overlay').classList.add('open');
+    }
+
+    function openAddForm() {
+      document.getElementById('form-title').textContent = 'Add Employee';
+      document.getElementById('form-original-id').value = '';
+      document.getElementById('form-name').value = '';
+      document.getElementById('form-role').value = '';
+      document.getElementById('form-dept').value = 'Dev';
+      document.getElementById('form-delete-btn').style.display = 'none';
+
+      populateManagerDropdown(null);
+      document.getElementById('form-manager').value = '';
+
+      document.getElementById('edit-overlay').classList.add('open');
+    }
+
+    function closeEditForm() {
+      document.getElementById('edit-overlay').classList.remove('open');
+    }
+
+    function saveEmployee() {
+      const originalId = document.getElementById('form-original-id').value;
+      const name = document.getElementById('form-name').value.trim();
+      const role = document.getElementById('form-role').value.trim();
+      const dept = document.getElementById('form-dept').value;
+      const managerId = document.getElementById('form-manager').value;
+
+      if (!name) { showToast('Name is required'); return; }
+      if (!role) { showToast('Role is required'); return; }
+
+      const newId = generateId(name);
+
+      if (originalId) {
+        // Editing existing employee
+        delete employees[originalId];
+        // Update any employees that reported to the old ID
+        if (originalId !== newId) {
+          for (const id in employees) {
+            if (employees[id].managerId === originalId) {
+              employees[id].managerId = newId;
+            }
+          }
+        }
+      } else {
+        // Adding new employee - check for duplicate
+        if (employees[newId]) {
+          showToast('An employee with a similar name already exists');
+          return;
+        }
+      }
+
+      employees[newId] = { id: newId, name, role, department: dept, managerId };
+
+      markUnsaved();
+      closeEditForm();
+      rebuild();
+      showToast(originalId ? `Updated ${name}` : `Added ${name}`);
+    }
+
+    function deleteEmployee() {
+      const originalId = document.getElementById('form-original-id').value;
+      if (!originalId) return;
+      const emp = employees[originalId];
+      if (!emp) return;
+
+      const reports = childrenMap[originalId] || [];
+      if (reports.length > 0) {
+        // Reassign reports to the deleted employee's manager
+        for (const report of reports) {
+          employees[report.id].managerId = emp.managerId;
+        }
+      }
+
+      delete employees[originalId];
+
+      markUnsaved();
+      closeEditForm();
+      rebuild();
+      showToast(`Removed ${emp.name}`);
+    }
+
+    // ---- SYNC STATUS ----
+    function markUnsaved() {
+      hasUnsavedChanges = true;
+      document.getElementById('sync-dot').className = 'sync-dot unsaved';
+      document.getElementById('sync-status').textContent = 'Unsaved changes';
+    }
+
+    function markSaved() {
+      hasUnsavedChanges = false;
+      document.getElementById('sync-dot').className = 'sync-dot';
+      document.getElementById('sync-status').textContent = 'Synced with Google Sheets';
+    }
+
+    function markSaving() {
+      document.getElementById('sync-dot').className = 'sync-dot saving';
+      document.getElementById('sync-status').textContent = 'Saving...';
+    }
+
+    function markError(msg) {
+      document.getElementById('sync-dot').className = 'sync-dot error';
+      document.getElementById('sync-status').textContent = msg;
+    }
+
+    // ---- SAVE TO GOOGLE SHEETS (via Apps Script) ----
+    async function saveToSheet() {
+      if (!APPS_SCRIPT_URL) {
+        showToast('Set APPS_SCRIPT_URL in the source to enable saving');
+        alert(
+          'To enable saving, deploy the Apps Script and paste the URL.\n\n' +
+          '1. Open your Google Sheet\n' +
+          '2. Go to Extensions > Apps Script\n' +
+          '3. Paste the code from AppsScript.gs\n' +
+          '4. Click Deploy > New deployment\n' +
+          '5. Type: Web app, Execute as: Me, Access: Anyone\n' +
+          '6. Copy the Web App URL\n' +
+          '7. Paste it into APPS_SCRIPT_URL in index.html'
+        );
+        return;
+      }
+
+      markSaving();
+
+      const sorted = Object.values(employees).sort((a, b) => a.name.localeCompare(b.name));
+
+      try {
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({
+            action: 'save_all',
+            employees: sorted,
+          }),
+        });
+
+        // Apps Script redirects, so we follow it
+        const data = await res.json();
+
+        if (!data.success) {
+          throw new Error(data.error || 'Save failed');
+        }
+
+        markSaved();
+        showToast(`Saved ${sorted.length} employees to Google Sheets`);
+      } catch (err) {
+        console.error('Save failed:', err);
+        markError('Save failed');
+        showToast('Save failed: ' + err.message);
+      }
+    }
+
+    // ---- PAN & ZOOM ----
+    function applyTransform() {
+      const container = document.getElementById('chart-container');
+      container.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+    }
+
+    function zoomIn() {
+      scale = Math.min(scale * 1.2, 3);
+      applyTransform();
+    }
+
+    function zoomOut() {
+      scale = Math.max(scale * 0.8, 0.2);
+      applyTransform();
+    }
+
+    function resetView() {
+      scale = 1;
+      translateX = 0;
+      translateY = 0;
+      applyTransform();
+      centerChart();
+    }
+
+    function centerChart() {
+      const canvas = document.getElementById('canvas');
+      const container = document.getElementById('chart-container');
+      const cw = container.scrollWidth;
+      const ch = container.scrollHeight;
+      const vw = canvas.clientWidth;
+      const vh = canvas.clientHeight;
+
+      scale = Math.min(vw / cw, vh / ch, 1) * 0.9;
+      translateX = (vw - cw * scale) / 2;
+      translateY = (vh - ch * scale) / 2;
+      applyTransform();
+    }
+
+    // ---- SEARCH ----
+    function handleSearch(query) {
+      const nodes = document.querySelectorAll('.node');
+      if (!query) {
+        nodes.forEach(n => { n.classList.remove('highlight', 'dimmed'); });
+        return;
+      }
+      const q = query.toLowerCase();
+      let hasMatch = false;
+      nodes.forEach(n => {
+        const name = n.getAttribute('data-name');
+        const role = n.querySelector('.role').textContent.toLowerCase();
+        const dept = n.querySelector('.dept').textContent.toLowerCase();
+        if (name.includes(q) || role.includes(q) || dept.includes(q)) {
+          n.classList.add('highlight');
+          n.classList.remove('dimmed');
+          hasMatch = true;
+        } else {
+          n.classList.remove('highlight');
+          n.classList.add('dimmed');
+        }
+      });
+      if (!hasMatch) {
+        nodes.forEach(n => { n.classList.remove('highlight', 'dimmed'); });
+      }
+    }
+
+    // ---- INIT ----
+    async function init() {
+      try {
+        const empList = await fetchData();
+        employees = indexEmployees(empList);
+        const result = buildTree(employees);
+        rootEmp = result.root;
+        childrenMap = result.childrenMap;
+
+        if (!rootEmp) throw new Error('Could not find the root of the org tree (CEO with no manager).');
+
+        renderStats(employees, childrenMap);
+
+        const container = document.getElementById('chart-container');
+        container.innerHTML = renderNode(rootEmp, childrenMap);
+
+        renderLegend();
+        renderAdminList();
+
+        document.getElementById('loading').style.display = 'none';
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => centerChart());
+        });
+
+      } catch (err) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error').style.display = 'flex';
+        document.getElementById('error-msg').textContent = err.message;
+        console.error(err);
+      }
+    }
+
+    // ---- EVENT LISTENERS ----
+    const canvas = document.getElementById('canvas');
+
+    canvas.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      dragStartX = e.clientX - translateX;
+      dragStartY = e.clientY - translateY;
+      canvas.classList.add('grabbing');
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      translateX = e.clientX - dragStartX;
+      translateY = e.clientY - dragStartY;
+      applyTransform();
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+      canvas.classList.remove('grabbing');
+    });
+
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? 0.9 : 1.1;
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      const newScale = Math.max(0.2, Math.min(3, scale * delta));
+      const ratio = newScale / scale;
+
+      translateX = mouseX - ratio * (mouseX - translateX);
+      translateY = mouseY - ratio * (mouseY - translateY);
+      scale = newScale;
+      applyTransform();
+    }, { passive: false });
+
+    document.getElementById('search-box').addEventListener('input', (e) => {
+      handleSearch(e.target.value.trim());
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
+        e.preventDefault();
+        document.getElementById('search-box').focus();
+      }
+      if (e.key === 'Escape') {
+        closeEditForm();
+      }
+    });
+
+    // Warn before leaving with unsaved changes
+    window.addEventListener('beforeunload', (e) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
+
+    init();
+  </script>
+</body>
+</html>
