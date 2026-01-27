@@ -1028,8 +1028,6 @@
     <img id="toolbar-logo" src="logo.png" alt="3DSource" />
     <h1>Org Chart 2026</h1>
     <input type="text" id="search-box" placeholder="Search employees..." />
-    <button onclick="zoomIn()">+ Zoom In</button>
-    <button onclick="zoomOut()">- Zoom Out</button>
     <button onclick="resetView()">Reset View</button>
     <button id="btn-admin" onclick="toggleAdmin()">Admin</button>
   </div>
@@ -1699,16 +1697,6 @@
     function applyTransform() {
       const container = document.getElementById('chart-container');
       container.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
-    }
-
-    function zoomIn() {
-      scale = Math.min(scale * 1.2, MAX_SCALE);
-      applyTransform();
-    }
-
-    function zoomOut() {
-      scale = Math.max(scale * 0.8, MIN_SCALE);
-      applyTransform();
     }
 
     function resetView() {
