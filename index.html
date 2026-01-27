@@ -156,6 +156,7 @@
       height: 100%;
       overflow: hidden;
       cursor: grab;
+      touch-action: none;
     }
 
     #canvas.grabbing { cursor: grabbing; }
@@ -241,6 +242,7 @@
     }
 
     #admin-header button:hover { background: #f5f5f5; }
+    #admin-close-btn { display: none; }
 
     .btn-primary {
       background: #10b981 !important;
@@ -655,6 +657,231 @@
       opacity: 1;
       transform: translateY(0);
     }
+
+    /* ---- DETAIL POPUP ---- */
+    #detail-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 400;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #detail-overlay.open { display: flex; }
+
+    #detail-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 0;
+      width: 360px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+
+    .detail-header {
+      padding: 24px 28px 16px;
+      border-bottom: 1px solid #f0f0f0;
+      position: relative;
+    }
+
+    .detail-dept-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+
+    .detail-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin-bottom: 2px;
+    }
+
+    .detail-role {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .detail-body {
+      padding: 16px 28px 24px;
+    }
+
+    .detail-row {
+      display: flex;
+      align-items: baseline;
+      padding: 8px 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .detail-row:last-child { border-bottom: none; }
+
+    .detail-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      width: 100px;
+      flex-shrink: 0;
+    }
+
+    .detail-value {
+      font-size: 13px;
+      color: #1a1a2e;
+    }
+
+    .detail-actions {
+      padding: 0 28px 20px;
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .detail-actions button {
+      padding: 7px 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 12px;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+
+    .detail-actions button:hover { background: #f5f5f5; }
+
+    /* ---- MOBILE ---- */
+    @media (max-width: 768px) {
+      #toolbar {
+        padding: 10px 12px;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      #toolbar h1 {
+        font-size: 15px;
+        margin-right: 0;
+        flex-basis: 100%;
+      }
+
+      #search-box {
+        flex: 1;
+        min-width: 0;
+        width: auto;
+      }
+
+      #toolbar button {
+        padding: 6px 10px;
+        font-size: 12px;
+      }
+
+      /* Stats bar */
+      #stats {
+        padding: 8px 12px;
+        gap: 12px;
+      }
+
+      .stat-value { font-size: 16px; }
+      .stat-label { font-size: 10px; }
+      .stat-divider { height: 20px; }
+
+      .dept-stats {
+        flex-basis: 100%;
+        margin-left: 0;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      /* Viewport */
+      #viewport {
+        margin: 6px;
+        border-radius: 8px;
+      }
+
+      /* Legend */
+      #legend {
+        bottom: 6px;
+        left: 6px;
+        padding: 6px 8px;
+        gap: 6px;
+        max-width: calc(100% - 12px);
+      }
+
+      .legend-item { font-size: 9px; }
+
+      /* Admin panel - full screen overlay on mobile */
+      #admin-panel {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        z-index: 300;
+        border-left: none;
+      }
+
+      #admin-close-btn { display: inline-block; }
+
+      /* Edit form modal */
+      #edit-form {
+        width: calc(100vw - 32px);
+        max-width: 420px;
+        padding: 20px 20px;
+        max-height: 85vh;
+      }
+
+      /* Detail popup */
+      #detail-card {
+        width: calc(100vw - 32px);
+        max-width: 360px;
+      }
+
+      /* Node cards */
+      .node {
+        width: 120px;
+        padding: 6px 8px;
+      }
+
+      .node .name { font-size: 10px; }
+      .node .role { font-size: 9px; }
+      .node .dept { font-size: 7.5px; }
+
+      .node .count-badge {
+        width: 16px;
+        height: 16px;
+        font-size: 8px;
+        top: -5px;
+        right: -5px;
+      }
+
+      /* Toast */
+      #toast {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 420px) {
+      #toolbar h1 { font-size: 14px; }
+
+      .stat-item:nth-child(n+6) { display: none; }
+
+      .node {
+        width: 100px;
+        padding: 5px 6px;
+      }
+
+      .node .name { font-size: 9px; }
+      .node .role { font-size: 8px; }
+      .node .dept { font-size: 7px; padding: 1px 4px; }
+
+      .child-branch { padding: 10px 2px 0; }
+      .connector-down { height: 10px; }
+    }
   </style>
 </head>
 <body>
@@ -693,6 +920,7 @@
         <h2>Manage Employees</h2>
         <button class="btn-primary" onclick="openAddForm()">+ Add</button>
         <button class="btn-save-sheet" onclick="saveToSheet()">Save to Sheet</button>
+        <button id="admin-close-btn" onclick="toggleAdmin()">Close</button>
       </div>
       <div id="admin-actions">
         <input type="text" id="admin-search" placeholder="Filter employees..." oninput="renderAdminList()" />
@@ -735,10 +963,38 @@
         <label>Reports To</label>
         <select id="form-manager"></select>
       </div>
+      <div class="form-group">
+        <label>Location</label>
+        <input type="text" id="form-location" placeholder="e.g. New York, NY" />
+      </div>
+      <div class="form-group">
+        <label>Start Date</label>
+        <input type="text" id="form-start" placeholder="e.g. Jan 2023" />
+      </div>
+      <div class="form-group">
+        <label>Years at Company</label>
+        <input type="text" id="form-years" placeholder="e.g. 3" />
+      </div>
       <div class="form-buttons">
         <button id="form-delete-btn" class="btn-danger" onclick="deleteEmployee()" style="margin-right:auto">Delete</button>
         <button onclick="closeEditForm()">Cancel</button>
         <button class="btn-primary" onclick="saveEmployee()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Popup -->
+  <div id="detail-overlay" onclick="if(event.target===this)closeDetail()">
+    <div id="detail-card">
+      <div class="detail-header">
+        <div class="detail-dept-bar" id="detail-dept-bar"></div>
+        <div class="detail-name" id="detail-name"></div>
+        <div class="detail-role" id="detail-role"></div>
+      </div>
+      <div class="detail-body" id="detail-body"></div>
+      <div class="detail-actions">
+        <button onclick="editFromDetail()" id="detail-edit-btn" style="display:none" class="btn-primary">Edit</button>
+        <button onclick="closeDetail()">Close</button>
       </div>
     </div>
   </div>
@@ -748,7 +1004,7 @@
   <script>
     // ---- CONFIG ----
     // Paste your deployed Apps Script Web App URL here (see AppsScript.gs for setup instructions)
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhKsWU7A-354CPixvyBEmZhZQIno98eGg4Fi7ji0SmvPyeM74woIEJVAJNNs4bpwU7/exec'; // e.g. 'https://script.google.com/macros/s/XXXXX/exec'
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwiv7YnsXWPKA8PGYiVObZPTeDSxhLdeiPFtRO8BTqUxSlYYiNfqb5IGwpICf4wfvgF/exec'; // e.g. 'https://script.google.com/macros/s/XXXXX/exec'
 
     // Fallback: Sheets API (read-only, used if APPS_SCRIPT_URL is not set)
     const SPREADSHEET_ID = '1o_0n8K7dqYrW0ytjRBUN0AUIe1uJQe_-j4bRJof-MI4';
@@ -802,6 +1058,63 @@
       setTimeout(() => t.classList.remove('show'), 2500);
     }
 
+    // ---- FORMAT HELPERS ----
+    function formatStartDate(raw) {
+      if (!raw) return '';
+      const d = new Date(raw);
+      if (isNaN(d)) return raw;
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function formatYears(raw) {
+      if (!raw && raw !== 0) return '';
+      const n = parseFloat(raw);
+      if (isNaN(n)) return raw;
+      return n.toFixed(1);
+    }
+
+    // ---- DETAIL POPUP ----
+    let detailEmpId = null;
+
+    function openDetail(empId) {
+      const emp = employees[empId];
+      if (!emp) return;
+      detailEmpId = empId;
+
+      const color = DEPT_COLORS[emp.department] || { border: '#999' };
+      document.getElementById('detail-dept-bar').style.background = color.border;
+      document.getElementById('detail-name').textContent = emp.name;
+      document.getElementById('detail-role').textContent = emp.role;
+
+      const manager = emp.managerId && employees[emp.managerId]
+        ? employees[emp.managerId].name
+        : 'None';
+      const reports = (childrenMap[emp.id] || []).length;
+
+      let rows = '';
+      rows += `<div class="detail-row"><div class="detail-label">Department</div><div class="detail-value">${emp.department}</div></div>`;
+      rows += `<div class="detail-row"><div class="detail-label">Reports To</div><div class="detail-value">${manager}</div></div>`;
+      rows += `<div class="detail-row"><div class="detail-label">Direct Reports</div><div class="detail-value">${reports}</div></div>`;
+      if (emp.location) rows += `<div class="detail-row"><div class="detail-label">Location</div><div class="detail-value">${emp.location}</div></div>`;
+      if (emp.start) rows += `<div class="detail-row"><div class="detail-label">Start Date</div><div class="detail-value">${formatStartDate(emp.start)}</div></div>`;
+      if (emp.years) rows += `<div class="detail-row"><div class="detail-label">Years</div><div class="detail-value">${formatYears(emp.years)}</div></div>`;
+
+      document.getElementById('detail-body').innerHTML = rows;
+      document.getElementById('detail-edit-btn').style.display = adminUnlocked ? '' : 'none';
+      document.getElementById('detail-overlay').classList.add('open');
+    }
+
+    function closeDetail() {
+      document.getElementById('detail-overlay').classList.remove('open');
+      detailEmpId = null;
+    }
+
+    function editFromDetail() {
+      const id = detailEmpId;
+      closeDetail();
+      openEditForm(id);
+    }
+
     // ---- FETCH DATA ----
     async function fetchData() {
       if (APPS_SCRIPT_URL) {
@@ -813,7 +1126,7 @@
         return data.employees;
       } else {
         // Fallback: Sheets API (read-only)
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/A1:E100?key=${API_KEY}`;
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/A1:H100?key=${API_KEY}`;
         const res = await fetch(url);
         if (!res.ok) throw new Error(`API returned ${res.status}: ${res.statusText}`);
         const data = await res.json();
@@ -832,6 +1145,9 @@
           role: row[2] || '',
           department: row[3] || '',
           managerId: row[4] || '',
+          location: row[5] || '',
+          start: row[6] || '',
+          years: row[7] || '',
         });
       }
       return emps;
@@ -1062,6 +1378,9 @@
       document.getElementById('form-role').value = emp.role;
       document.getElementById('form-dept').value = emp.department;
       document.getElementById('form-delete-btn').style.display = '';
+      document.getElementById('form-location').value = emp.location || '';
+      document.getElementById('form-start').value = emp.start || '';
+      document.getElementById('form-years').value = emp.years || '';
 
       populateManagerDropdown(empId);
       document.getElementById('form-manager').value = emp.managerId || '';
@@ -1076,6 +1395,9 @@
       document.getElementById('form-role').value = '';
       document.getElementById('form-dept').value = 'Dev';
       document.getElementById('form-delete-btn').style.display = 'none';
+      document.getElementById('form-location').value = '';
+      document.getElementById('form-start').value = '';
+      document.getElementById('form-years').value = '';
 
       populateManagerDropdown(null);
       document.getElementById('form-manager').value = '';
@@ -1093,6 +1415,9 @@
       const role = document.getElementById('form-role').value.trim();
       const dept = document.getElementById('form-dept').value;
       const managerId = document.getElementById('form-manager').value;
+      const location = document.getElementById('form-location').value.trim();
+      const start = document.getElementById('form-start').value.trim();
+      const years = document.getElementById('form-years').value.trim();
 
       if (!name) { showToast('Name is required'); return; }
       if (!role) { showToast('Role is required'); return; }
@@ -1118,12 +1443,12 @@
         }
       }
 
-      employees[newId] = { id: newId, name, role, department: dept, managerId };
+      employees[newId] = { id: newId, name, role, department: dept, managerId, location, start, years };
 
-      markUnsaved();
       closeEditForm();
       rebuild();
       showToast(originalId ? `Updated ${name}` : `Added ${name}`);
+      saveToSheet();
     }
 
     function deleteEmployee() {
@@ -1142,10 +1467,10 @@
 
       delete employees[originalId];
 
-      markUnsaved();
       closeEditForm();
       rebuild();
       showToast(`Removed ${emp.name}`);
+      saveToSheet();
     }
 
     // ---- SYNC STATUS ----
@@ -1162,11 +1487,13 @@
     }
 
     function markSaving() {
+      hasUnsavedChanges = true;
       document.getElementById('sync-dot').className = 'sync-dot saving';
       document.getElementById('sync-status').textContent = 'Saving...';
     }
 
     function markError(msg) {
+      hasUnsavedChanges = true;
       document.getElementById('sync-dot').className = 'sync-dot error';
       document.getElementById('sync-status').textContent = msg;
     }
@@ -1319,7 +1646,10 @@
     // ---- EVENT LISTENERS ----
     const canvas = document.getElementById('canvas');
 
+    // Click on card to open detail (but not during drag)
+    let mouseDownPos = null;
     canvas.addEventListener('mousedown', (e) => {
+      mouseDownPos = { x: e.clientX, y: e.clientY };
       isDragging = true;
       dragStartX = e.clientX - translateX;
       dragStartY = e.clientY - translateY;
@@ -1333,9 +1663,19 @@
       applyTransform();
     });
 
-    window.addEventListener('mouseup', () => {
+    window.addEventListener('mouseup', (e) => {
       isDragging = false;
       canvas.classList.remove('grabbing');
+
+      // If mouse barely moved, treat as click on card
+      if (mouseDownPos && Math.abs(e.clientX - mouseDownPos.x) < 4 && Math.abs(e.clientY - mouseDownPos.y) < 4) {
+        const node = e.target.closest('.node');
+        if (node) {
+          const empId = node.getAttribute('data-id');
+          if (empId) openDetail(empId);
+        }
+      }
+      mouseDownPos = null;
     });
 
     canvas.addEventListener('wheel', (e) => {
@@ -1354,6 +1694,74 @@
       applyTransform();
     }, { passive: false });
 
+    // ---- TOUCH EVENTS ----
+    let touchStartPos = null;
+    let lastTouchDist = 0;
+    let touchMoved = false;
+
+    canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        const t = e.touches[0];
+        touchStartPos = { x: t.clientX, y: t.clientY };
+        dragStartX = t.clientX - translateX;
+        dragStartY = t.clientY - translateY;
+        touchMoved = false;
+      } else if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        lastTouchDist = Math.sqrt(dx * dx + dy * dy);
+        touchMoved = true;
+      }
+    }, { passive: true });
+
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      if (e.touches.length === 1 && touchStartPos) {
+        const t = e.touches[0];
+        if (Math.abs(t.clientX - touchStartPos.x) > 4 || Math.abs(t.clientY - touchStartPos.y) > 4) {
+          touchMoved = true;
+        }
+        translateX = t.clientX - dragStartX;
+        translateY = t.clientY - dragStartY;
+        applyTransform();
+      } else if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (lastTouchDist > 0) {
+          const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+          const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+          const rect = canvas.getBoundingClientRect();
+          const cx = midX - rect.left;
+          const cy = midY - rect.top;
+
+          const newScale = Math.max(0.2, Math.min(3, scale * (dist / lastTouchDist)));
+          const ratio = newScale / scale;
+          translateX = cx - ratio * (cx - translateX);
+          translateY = cy - ratio * (cy - translateY);
+          scale = newScale;
+          applyTransform();
+        }
+        lastTouchDist = dist;
+      }
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', (e) => {
+      if (e.touches.length === 0) {
+        // Tap to open detail
+        if (!touchMoved && touchStartPos) {
+          const node = e.target.closest('.node');
+          if (node) {
+            const empId = node.getAttribute('data-id');
+            if (empId) openDetail(empId);
+          }
+        }
+        touchStartPos = null;
+        lastTouchDist = 0;
+      }
+    }, { passive: true });
+
     document.getElementById('search-box').addEventListener('input', (e) => {
       handleSearch(e.target.value.trim());
     });
@@ -1364,6 +1772,7 @@
         document.getElementById('search-box').focus();
       }
       if (e.key === 'Escape') {
+        closeDetail();
         closeEditForm();
       }
     });
