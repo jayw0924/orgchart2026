@@ -266,14 +266,6 @@
 
     .btn-danger:hover { background: #dc2626 !important; }
 
-    .btn-save-sheet {
-      background: #4a90d9 !important;
-      color: #fff !important;
-      border-color: #3a7bc8 !important;
-    }
-
-    .btn-save-sheet:hover { background: #3a7bc8 !important; }
-
     #admin-actions {
       padding: 12px 20px;
       border-bottom: 1px solid #eee;
@@ -996,7 +988,6 @@
       <div id="admin-header">
         <h2>Manage Employees</h2>
         <button class="btn-primary" onclick="openAddForm()">+ Add</button>
-        <button class="btn-save-sheet" onclick="saveToSheet()">Save to Sheet</button>
         <button id="admin-close-btn" onclick="toggleAdmin()">Close</button>
       </div>
       <div id="admin-actions">
@@ -1046,11 +1037,8 @@
       </div>
       <div class="form-group">
         <label>Start Date</label>
-        <input type="text" id="form-start" placeholder="e.g. Jan 2023" />
-      </div>
-      <div class="form-group">
-        <label>Years at Company</label>
-        <input type="text" id="form-years" placeholder="e.g. 3" />
+        <input type="text" id="form-start" placeholder="e.g. Jan 13, 2023" />
+        <span style="font-size:11px; color:#999; margin-top:2px;">Format: Mon DD, YYYY</span>
       </div>
       <div class="form-buttons">
         <button id="form-delete-btn" class="btn-danger" onclick="deleteEmployee()" style="margin-right:auto">Delete</button>
@@ -1237,17 +1225,28 @@
     }
 
     function buildTree(emps) {
-      let root = null;
       const cMap = {};
+      const roots = [];
 
       for (const id in emps) {
         const emp = emps[id];
         const managerId = emp.managerId;
         if (!managerId || managerId === '\u2014' || managerId === '-' || !emps[managerId]) {
-          root = emp;
+          roots.push(emp);
         } else {
           if (!cMap[managerId]) cMap[managerId] = [];
           cMap[managerId].push(emp);
+        }
+      }
+
+      // Pick the root with the most reports; attach others as its direct reports
+      let root = roots[0] || null;
+      if (roots.length > 1) {
+        roots.sort((a, b) => countReports(b.id, cMap) - countReports(a.id, cMap));
+        root = roots[0];
+        for (let i = 1; i < roots.length; i++) {
+          if (!cMap[root.id]) cMap[root.id] = [];
+          cMap[root.id].push(roots[i]);
         }
       }
 
@@ -1262,6 +1261,8 @@
 
       return { root, childrenMap: cMap };
     }
+
+
 
     function countReports(id, cMap) {
       const direct = cMap[id] || [];
@@ -1467,8 +1468,7 @@
       document.getElementById('form-dept').value = emp.department;
       document.getElementById('form-delete-btn').style.display = '';
       document.getElementById('form-location').value = emp.location || '';
-      document.getElementById('form-start').value = emp.start || '';
-      document.getElementById('form-years').value = emp.years || '';
+      document.getElementById('form-start').value = formatStartDate(emp.start);
 
       populateManagerDropdown(empId);
       document.getElementById('form-manager').value = emp.managerId || '';
@@ -1485,7 +1485,6 @@
       document.getElementById('form-delete-btn').style.display = 'none';
       document.getElementById('form-location').value = '';
       document.getElementById('form-start').value = '';
-      document.getElementById('form-years').value = '';
 
       populateManagerDropdown(null);
       document.getElementById('form-manager').value = '';
@@ -1505,12 +1504,12 @@
       const managerId = document.getElementById('form-manager').value;
       const location = document.getElementById('form-location').value.trim();
       const start = document.getElementById('form-start').value.trim();
-      const years = document.getElementById('form-years').value.trim();
 
       if (!name) { showToast('Name is required'); return; }
       if (!role) { showToast('Role is required'); return; }
 
       const newId = generateId(name);
+      const existingYears = originalId && employees[originalId] ? employees[originalId].years : '';
 
       if (originalId) {
         // Editing existing employee
@@ -1531,7 +1530,7 @@
         }
       }
 
-      employees[newId] = { id: newId, name, role, department: dept, managerId, location, start, years };
+      employees[newId] = { id: newId, name, role, department: dept, managerId, location, start, years: existingYears };
 
       closeEditForm();
       rebuild();
