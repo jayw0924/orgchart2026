@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3DSource Org Chart</title>
+  <title>Org Chart 2026</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -26,6 +26,12 @@
       align-items: center;
       gap: 16px;
       flex-shrink: 0;
+    }
+
+    #toolbar-logo {
+      height: 32px;
+      width: auto;
+      object-fit: contain;
     }
 
     #toolbar h1 {
@@ -762,10 +768,12 @@
         flex-wrap: wrap;
       }
 
+      #toolbar-logo { height: 26px; }
+
       #toolbar h1 {
         font-size: 15px;
         margin-right: 0;
-        flex-basis: 100%;
+        flex: 1;
       }
 
       #search-box {
@@ -897,7 +905,8 @@
   </div>
 
   <div id="toolbar">
-    <h1>3DSource Org Chart</h1>
+    <img id="toolbar-logo" src="logo.png" alt="3DSource" />
+    <h1>Org Chart 2026</h1>
     <input type="text" id="search-box" placeholder="Search employees..." />
     <button onclick="zoomIn()">+ Zoom In</button>
     <button onclick="zoomOut()">- Zoom Out</button>
@@ -1232,7 +1241,14 @@
         if (cMap[id].length > 0) numManagers++;
       }
       const roles = new Set();
-      for (const id in emps) roles.add(emps[id].role);
+      let tenureSum = 0;
+      let tenureCount = 0;
+      for (const id in emps) {
+        roles.add(emps[id].role);
+        const y = parseFloat(emps[id].years);
+        if (!isNaN(y)) { tenureSum += y; tenureCount++; }
+      }
+      const avgTenure = tenureCount > 0 ? (tenureSum / tenureCount).toFixed(1) : '—';
 
       let html = '';
       html += `<div class="stat-item"><span class="stat-value">${total}</span><span class="stat-label">Headcount</span></div>`;
@@ -1242,6 +1258,8 @@
       html += `<div class="stat-item"><span class="stat-value">${numManagers}</span><span class="stat-label">Managers</span></div>`;
       html += `<div class="stat-divider"></div>`;
       html += `<div class="stat-item"><span class="stat-value">${roles.size}</span><span class="stat-label">Roles</span></div>`;
+      html += `<div class="stat-divider"></div>`;
+      html += `<div class="stat-item"><span class="stat-value">${avgTenure}<span style="font-size:12px;font-weight:400;color:#888"> yr</span></span><span class="stat-label">Avg Tenure</span></div>`;
 
       html += `<div class="dept-stats">`;
       const sortedDepts = Object.entries(deptCounts).sort((a, b) => b[1] - a[1]);
