@@ -4,13 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Org Chart 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #ebedf0;
-      color: #1a1a2e;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f1f5f9;
+      color: #0f172a;
       height: 100vh;
       display: flex;
       flex-direction: column;
@@ -19,9 +22,9 @@
 
     /* ---- TOOLBAR ---- */
     #toolbar {
-      background: #fff;
-      border-bottom: 1px solid #ddd;
-      padding: 12px 24px;
+      background: #0f172a;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 14px 24px;
       display: flex;
       align-items: center;
       gap: 16px;
@@ -37,47 +40,58 @@
     #toolbar h1 {
       font-size: 18px;
       font-weight: 700;
-      color: #1a1a2e;
+      color: #f8fafc;
       margin-right: auto;
     }
 
     #toolbar button {
       padding: 6px 14px;
-      border: 1px solid #ccc;
+      border: 1px solid rgba(255,255,255,0.15);
       border-radius: 6px;
-      background: #fff;
+      background: transparent;
       cursor: pointer;
       font-size: 13px;
-      color: #333;
-      transition: background 0.15s;
+      font-weight: 500;
+      color: #cbd5e1;
+      transition: all 0.15s;
     }
 
-    #toolbar button:hover { background: #f5f5f5; }
+    #toolbar button:hover {
+      background: rgba(255,255,255,0.08);
+      color: #f8fafc;
+      border-color: rgba(255,255,255,0.25);
+    }
 
     #btn-admin {
-      background: #4a90d9 !important;
+      background: #10b981 !important;
       color: #fff !important;
-      border-color: #3a7bc8 !important;
+      border-color: #10b981 !important;
+      font-weight: 600 !important;
     }
 
-    #btn-admin:hover { background: #3a7bc8 !important; }
+    #btn-admin:hover { background: #059669 !important; border-color: #059669 !important; }
 
     #search-box {
-      padding: 6px 12px;
-      border: 1px solid #ccc;
+      padding: 7px 12px;
+      border: 1px solid rgba(255,255,255,0.12);
       border-radius: 6px;
       font-size: 13px;
-      width: 200px;
+      width: 220px;
       outline: none;
+      background: #1e293b;
+      color: #f1f5f9;
+      font-family: inherit;
     }
 
-    #search-box:focus { border-color: #4a90d9; box-shadow: 0 0 0 2px rgba(74,144,217,0.2); }
+    #search-box::placeholder { color: #64748b; }
+
+    #search-box:focus { border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.25); }
 
     /* ---- STATS BAR ---- */
     #stats {
       background: #fff;
-      border-bottom: 1px solid #ddd;
-      padding: 10px 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      padding: 12px 24px;
       display: flex;
       align-items: center;
       gap: 24px;
@@ -92,14 +106,14 @@
     }
 
     .stat-value {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 700;
-      color: #1a1a2e;
+      color: #0f172a;
     }
 
     .stat-label {
       font-size: 11px;
-      color: #888;
+      color: #64748b;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       font-weight: 500;
@@ -108,7 +122,7 @@
     .stat-divider {
       width: 1px;
       height: 28px;
-      background: #e0e0e0;
+      background: #e2e8f0;
     }
 
     .dept-stats {
@@ -123,7 +137,7 @@
       gap: 5px;
       font-size: 11px;
       font-weight: 600;
-      color: #555;
+      color: #64748b;
     }
 
     .dept-stat-dot {
@@ -133,7 +147,7 @@
     }
 
     .dept-stat-count {
-      color: #1a1a2e;
+      color: #0f172a;
       font-weight: 700;
     }
 
@@ -149,12 +163,15 @@
     #viewport {
       flex: 1;
       margin: 16px;
-      border: 1px solid #ccc;
+      border: 1px solid #e2e8f0;
       border-radius: 12px;
-      background: #f7f8fa;
+      background:
+        radial-gradient(circle, #cbd5e1 0.5px, transparent 0.5px);
+      background-size: 24px 24px;
+      background-color: #f1f5f9;
       overflow: hidden;
       position: relative;
-      box-shadow: inset 0 1px 4px rgba(0,0,0,0.04);
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.04);
     }
 
     #canvas {
@@ -180,15 +197,15 @@
       bottom: 12px;
       left: 12px;
       z-index: 10;
-      background: rgba(255,255,255,0.92);
+      background: #0f172a;
       backdrop-filter: blur(8px);
       border-radius: 8px;
-      padding: 8px 12px;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+      padding: 8px 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      border: 1px solid #e5e7eb;
+      gap: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
     }
 
     .legend-item {
@@ -197,7 +214,7 @@
       gap: 5px;
       font-size: 10px;
       font-weight: 500;
-      color: #555;
+      color: #94a3b8;
     }
 
     .legend-dot {
@@ -206,14 +223,14 @@
       border-radius: 50%;
     }
 
-    /* ---- ADMIN PANEL ---- */
+    /* ---- ADMIN PANEL (full-screen overlay with table) ---- */
     #admin-panel {
-      width: 380px;
+      position: fixed;
+      inset: 0;
       background: #fff;
-      border-left: 1px solid #ddd;
       display: none;
       flex-direction: column;
-      flex-shrink: 0;
+      z-index: 200;
       overflow: hidden;
     }
 
@@ -222,33 +239,34 @@
     }
 
     #admin-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid #eee;
+      padding: 20px 28px;
+      border-bottom: 1px solid #e2e8f0;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 16px;
       flex-shrink: 0;
     }
 
     #admin-header h2 {
-      font-size: 15px;
+      font-size: 18px;
       font-weight: 700;
+      color: #0f172a;
       flex: 1;
     }
 
     #admin-header button {
-      padding: 5px 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      padding: 6px 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
       background: #fff;
       cursor: pointer;
-      font-size: 12px;
-      color: #333;
-      transition: background 0.15s;
+      font-size: 13px;
+      font-weight: 500;
+      color: #334155;
+      transition: all 0.15s;
     }
 
-    #admin-header button:hover { background: #f5f5f5; }
-    #admin-close-btn { display: none; }
+    #admin-header button:hover { background: #f8fafc; border-color: #cbd5e1; }
 
     .btn-primary {
       background: #10b981 !important;
@@ -267,64 +285,97 @@
     .btn-danger:hover { background: #dc2626 !important; }
 
     #admin-actions {
-      padding: 12px 20px;
-      border-bottom: 1px solid #eee;
+      padding: 12px 28px;
+      border-bottom: 1px solid #e2e8f0;
       display: flex;
       gap: 8px;
       flex-shrink: 0;
     }
 
     #admin-search {
-      padding: 6px 10px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 12px;
-      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 13px;
+      width: 300px;
       outline: none;
+      font-family: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
 
-    #admin-search:focus { border-color: #4a90d9; }
+    #admin-search:focus { border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.2); }
 
     #admin-list {
       flex: 1;
       overflow-y: auto;
+      overflow-x: auto;
       padding: 0;
     }
 
-    .admin-emp-item {
-      padding: 10px 20px;
-      border-bottom: 1px solid #f0f0f0;
-      cursor: pointer;
-      transition: background 0.1s;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .admin-emp-item:hover { background: #f7f8fa; }
-    .admin-emp-item.selected { background: #eef2ff; }
-
-    .admin-emp-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .admin-emp-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .admin-emp-name {
+    #admin-table {
+      width: 100%;
+      border-collapse: collapse;
       font-size: 13px;
-      font-weight: 600;
-      color: #1a1a2e;
     }
 
-    .admin-emp-role {
+    #admin-table thead {
+      position: sticky;
+      top: 0;
+      background: #f8fafc;
+      z-index: 1;
+    }
+
+    #admin-table th {
+      padding: 10px 16px;
+      text-align: left;
       font-size: 11px;
-      color: #888;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #e2e8f0;
+      white-space: nowrap;
+    }
+
+    #admin-table td {
+      padding: 10px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+
+    #admin-table tbody tr {
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+
+    #admin-table tbody tr:hover {
+      background: #f1f5f9;
+    }
+
+    .admin-dept-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+      display: inline-block;
+    }
+
+    .admin-edit-btn {
+      padding: 4px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      font-family: inherit;
+      color: #334155;
+      transition: all 0.15s;
+    }
+
+    .admin-edit-btn:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
     }
 
     /* ---- EDIT FORM (modal overlay) ---- */
@@ -332,7 +383,8 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.4);
+      background: rgba(15,23,42,0.5);
+      backdrop-filter: blur(4px);
       z-index: 500;
       align-items: center;
       justify-content: center;
@@ -342,17 +394,18 @@
 
     #edit-form {
       background: #fff;
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 28px 32px;
       width: 420px;
       max-height: 90vh;
       overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.2);
     }
 
     #edit-form h3 {
       font-size: 16px;
       font-weight: 700;
+      color: #0f172a;
       margin-bottom: 20px;
     }
 
@@ -364,7 +417,7 @@
       display: block;
       font-size: 11px;
       font-weight: 600;
-      color: #888;
+      color: #64748b;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       margin-bottom: 4px;
@@ -374,17 +427,18 @@
     .form-group select {
       width: 100%;
       padding: 8px 12px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
       font-size: 13px;
       outline: none;
       font-family: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
 
     .form-group input:focus,
     .form-group select:focus {
-      border-color: #4a90d9;
-      box-shadow: 0 0 0 2px rgba(74,144,217,0.2);
+      border-color: #10b981;
+      box-shadow: 0 0 0 2px rgba(16,185,129,0.2);
     }
 
     .form-buttons {
@@ -396,27 +450,30 @@
 
     .form-buttons button {
       padding: 8px 18px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
       background: #fff;
       cursor: pointer;
       font-size: 13px;
+      font-weight: 500;
       font-family: inherit;
-      transition: background 0.15s;
+      color: #334155;
+      transition: all 0.15s;
     }
 
-    .form-buttons button:hover { background: #f5f5f5; }
+    .form-buttons button:hover { background: #f8fafc; border-color: #cbd5e1; }
 
     /* ---- SYNC STATUS ---- */
     #sync-bar {
-      padding: 8px 20px;
-      border-top: 1px solid #eee;
+      padding: 10px 28px;
+      border-top: 1px solid #e2e8f0;
       display: flex;
       align-items: center;
       gap: 10px;
       flex-shrink: 0;
       font-size: 11px;
-      color: #888;
+      color: #64748b;
+      font-weight: 500;
     }
 
     #sync-bar .sync-dot {
@@ -427,7 +484,7 @@
     }
 
     #sync-bar .sync-dot.unsaved { background: #f59e0b; }
-    #sync-bar .sync-dot.saving { background: #4a90d9; animation: pulse 1s infinite; }
+    #sync-bar .sync-dot.saving { background: #3b82f6; animation: pulse 1s infinite; }
     #sync-bar .sync-dot.error { background: #ef4444; }
 
     @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
@@ -460,7 +517,7 @@
       left: calc(50% - 1px);
       width: 2px;
       height: 14px;
-      background: #c0c8d4;
+      background: #cbd5e1;
     }
 
     .tree .child-branch::after {
@@ -468,7 +525,7 @@
       position: absolute;
       top: 0;
       height: 2px;
-      background: #c0c8d4;
+      background: #cbd5e1;
     }
 
     .tree .children > .child-branch:first-child::after {
@@ -493,7 +550,7 @@
     .connector-down {
       width: 2px;
       height: 14px;
-      background: #c0c8d4;
+      background: #cbd5e1;
       margin: 0 auto;
     }
 
@@ -507,40 +564,40 @@
     /* ---- NODE CARDS ---- */
     .node {
       background: #fff;
-      border-radius: 8px;
-      padding: 8px 10px;
-      width: 140px;
+      border-radius: 10px;
+      padding: 10px 12px;
+      width: 148px;
       text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      border-left: 3px solid #ccc;
-      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+      border-left: 3px solid #cbd5e1;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
       cursor: pointer;
       position: relative;
     }
 
     .node:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 0 0 2px rgba(16,185,129,0.2);
     }
 
     .node.highlight {
-      box-shadow: 0 0 0 3px #fbbf24, 0 6px 20px rgba(0,0,0,0.15);
+      box-shadow: 0 0 0 3px #10b981, 0 8px 24px rgba(0,0,0,0.15);
       transform: translateY(-2px);
     }
 
-    .node.dimmed { opacity: 0.3; }
+    .node.dimmed { opacity: 0.25; }
 
     .node .name {
       font-weight: 700;
-      font-size: 11px;
+      font-size: 11.5px;
       margin-bottom: 2px;
-      color: #1a1a2e;
+      color: #0f172a;
     }
 
     .node .role {
       font-size: 9.5px;
-      color: #666;
-      margin-bottom: 3px;
+      color: #64748b;
+      margin-bottom: 4px;
     }
 
     .node .dept {
@@ -548,7 +605,7 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      padding: 1px 6px;
+      padding: 2px 7px;
       border-radius: 8px;
       display: inline-block;
     }
@@ -557,7 +614,7 @@
       position: absolute;
       top: -6px;
       right: -6px;
-      background: #4a90d9;
+      background: #0f172a;
       color: #fff;
       font-size: 9px;
       font-weight: 700;
@@ -567,7 +624,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
     /* ---- DEPARTMENT COLORS ---- */
@@ -602,7 +659,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #ebedf0;
+      background: #0f172a;
       z-index: 1000;
       flex-direction: column;
       gap: 16px;
@@ -611,8 +668,8 @@
     .spinner {
       width: 40px;
       height: 40px;
-      border: 4px solid #e5e7eb;
-      border-top-color: #4a90d9;
+      border: 4px solid #1e293b;
+      border-top-color: #10b981;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
@@ -623,7 +680,7 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: #ebedf0;
+      background: #0f172a;
       z-index: 1000;
       justify-content: center;
       align-items: center;
@@ -632,23 +689,25 @@
     }
 
     #error h2 { color: #ef4444; }
-    #error p { color: #666; max-width: 500px; text-align: center; }
+    #error p { color: #94a3b8; max-width: 500px; text-align: center; }
 
     /* ---- TOAST ---- */
     #toast {
       position: fixed;
       bottom: 24px;
       right: 24px;
-      background: #1a1a2e;
-      color: #fff;
+      background: #0f172a;
+      color: #f1f5f9;
       padding: 10px 20px;
-      border-radius: 8px;
+      border-radius: 10px;
       font-size: 13px;
+      font-weight: 500;
       z-index: 600;
       opacity: 0;
       transform: translateY(10px);
       transition: opacity 0.3s, transform 0.3s;
       pointer-events: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
     }
 
     #toast.show {
@@ -661,7 +720,8 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.4);
+      background: rgba(15,23,42,0.5);
+      backdrop-filter: blur(4px);
       z-index: 400;
       align-items: center;
       justify-content: center;
@@ -671,16 +731,16 @@
 
     #detail-card {
       background: #fff;
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 0;
-      width: 360px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      width: 380px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.2);
       overflow: hidden;
     }
 
     .detail-header {
       padding: 24px 28px 16px;
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid #f1f5f9;
       position: relative;
     }
 
@@ -695,13 +755,13 @@
     .detail-name {
       font-size: 18px;
       font-weight: 700;
-      color: #1a1a2e;
+      color: #0f172a;
       margin-bottom: 2px;
     }
 
     .detail-role {
       font-size: 13px;
-      color: #666;
+      color: #64748b;
     }
 
     .detail-body {
@@ -712,7 +772,7 @@
       display: flex;
       align-items: baseline;
       padding: 8px 0;
-      border-bottom: 1px solid #f5f5f5;
+      border-bottom: 1px solid #f1f5f9;
     }
 
     .detail-row:last-child { border-bottom: none; }
@@ -720,7 +780,7 @@
     .detail-label {
       font-size: 11px;
       font-weight: 600;
-      color: #888;
+      color: #64748b;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       width: 100px;
@@ -729,7 +789,7 @@
 
     .detail-value {
       font-size: 13px;
-      color: #1a1a2e;
+      color: #0f172a;
     }
 
     .detail-actions {
@@ -741,23 +801,26 @@
 
     .detail-actions button {
       padding: 7px 16px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
       background: #fff;
       cursor: pointer;
       font-size: 12px;
+      font-weight: 500;
       font-family: inherit;
-      transition: background 0.15s;
+      color: #334155;
+      transition: all 0.15s;
     }
 
-    .detail-actions button:hover { background: #f5f5f5; }
+    .detail-actions button:hover { background: #f8fafc; border-color: #cbd5e1; }
 
     /* ---- PASSWORD MODAL ---- */
     #password-overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.4);
+      background: rgba(15,23,42,0.5);
+      backdrop-filter: blur(4px);
       z-index: 500;
       align-items: center;
       justify-content: center;
@@ -767,31 +830,31 @@
 
     #password-card {
       background: #fff;
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 28px;
-      width: 320px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      width: 340px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.2);
     }
 
     #password-card h3 {
       font-size: 16px;
       font-weight: 700;
-      color: #1a1a2e;
+      color: #0f172a;
       margin-bottom: 16px;
     }
 
     #password-input {
       width: 100%;
       padding: 10px 12px;
-      border: 1px solid #ccc;
+      border: 1px solid #e2e8f0;
       border-radius: 8px;
       font-size: 14px;
       font-family: inherit;
       outline: none;
-      transition: border-color 0.15s;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
 
-    #password-input:focus { border-color: #6366f1; }
+    #password-input:focus { border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.2); }
 
     #password-error {
       color: #dc2626;
@@ -809,16 +872,18 @@
 
     #password-buttons button {
       padding: 8px 18px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
       background: #fff;
       cursor: pointer;
       font-size: 13px;
+      font-weight: 500;
       font-family: inherit;
-      transition: background 0.15s;
+      color: #334155;
+      transition: all 0.15s;
     }
 
-    #password-buttons button:hover { background: #f5f5f5; }
+    #password-buttons button:hover { background: #f8fafc; border-color: #cbd5e1; }
 
     /* ---- MOBILE ---- */
     @media (max-width: 768px) {
@@ -881,16 +946,11 @@
 
       .legend-item { font-size: 9px; }
 
-      /* Admin panel - full screen overlay on mobile */
-      #admin-panel {
-        position: fixed;
-        inset: 0;
-        width: 100%;
-        z-index: 300;
-        border-left: none;
-      }
-
-      #admin-close-btn { display: inline-block; }
+      /* Admin table on mobile */
+      #admin-header { padding: 16px; }
+      #admin-actions { padding: 12px 16px; }
+      #admin-search { width: auto; flex: 1; }
+      #admin-table th, #admin-table td { padding: 8px 10px; font-size: 12px; }
 
       /* Edit form modal */
       #edit-form {
@@ -903,7 +963,7 @@
       /* Detail popup */
       #detail-card {
         width: calc(100vw - 32px);
-        max-width: 360px;
+        max-width: 380px;
       }
 
       /* Node cards */
@@ -956,7 +1016,7 @@
 
   <div id="loading">
     <div class="spinner"></div>
-    <div style="color:#666; font-size:14px;">Loading org chart...</div>
+    <div style="color:#94a3b8; font-size:14px; font-weight:500;">Loading org chart...</div>
   </div>
 
   <div id="error">
@@ -1038,7 +1098,7 @@
       <div class="form-group">
         <label>Start Date</label>
         <input type="text" id="form-start" placeholder="e.g. Jan 13, 2023" />
-        <span style="font-size:11px; color:#999; margin-top:2px;">Format: Mon DD, YYYY</span>
+        <span style="font-size:11px; color:#94a3b8; margin-top:2px;">Format: Mon DD, YYYY</span>
       </div>
       <div class="form-buttons">
         <button id="form-delete-btn" class="btn-danger" onclick="deleteEmployee()" style="margin-right:auto">Delete</button>
@@ -1173,7 +1233,7 @@
       if (!emp) return;
       detailEmpId = empId;
 
-      const color = DEPT_COLORS[emp.department] || { border: '#999' };
+      const color = DEPT_COLORS[emp.department] || { border: '#94a3b8' };
       document.getElementById('detail-dept-bar').style.background = color.border;
       document.getElementById('detail-name').textContent = emp.name;
       document.getElementById('detail-role').textContent = emp.role;
@@ -1326,12 +1386,12 @@
       html += `<div class="stat-divider"></div>`;
       html += `<div class="stat-item"><span class="stat-value">${roles.size}</span><span class="stat-label">Roles</span></div>`;
       html += `<div class="stat-divider"></div>`;
-      html += `<div class="stat-item"><span class="stat-value">${avgTenure}<span style="font-size:12px;font-weight:400;color:#888"> yr</span></span><span class="stat-label">Avg Tenure</span></div>`;
+      html += `<div class="stat-item"><span class="stat-value">${avgTenure}<span style="font-size:12px;font-weight:400;color:#64748b"> yr</span></span><span class="stat-label">Avg Tenure</span></div>`;
 
       html += `<div class="dept-stats">`;
       const sortedDepts = Object.entries(deptCounts).sort((a, b) => b[1] - a[1]);
       for (const [dept, count] of sortedDepts) {
-        const color = DEPT_COLORS[dept] ? DEPT_COLORS[dept].dot : '#999';
+        const color = DEPT_COLORS[dept] ? DEPT_COLORS[dept].dot : '#94a3b8';
         html += `<div class="dept-stat">
           <div class="dept-stat-dot" style="background:${color}"></div>
           ${dept} <span class="dept-stat-count">${count}</span>
@@ -1417,31 +1477,46 @@
       if (!panel.classList.contains('open')) {
         checkAdminPassword(() => {
           panel.classList.add('open');
-          setTimeout(() => centerChart(), 50);
+          renderAdminList();
         });
         return;
       }
       panel.classList.remove('open');
-      setTimeout(() => centerChart(), 50);
     }
 
     function renderAdminList() {
       const list = document.getElementById('admin-list');
       const filter = (document.getElementById('admin-search').value || '').toLowerCase();
-
       const sorted = Object.values(employees).sort((a, b) => a.name.localeCompare(b.name));
-      let html = '';
+
+      document.querySelector('#admin-header h2').textContent = 'Manage Employees (' + sorted.length + ')';
+
+      let html = '<table id="admin-table"><thead><tr>';
+      html += '<th>Name</th>';
+      html += '<th>Role</th>';
+      html += '<th>Department</th>';
+      html += '<th>Reports To</th>';
+      html += '<th>Location</th>';
+      html += '<th>Start Date</th>';
+      html += '<th></th>';
+      html += '</tr></thead><tbody>';
+
       for (const emp of sorted) {
         if (filter && !emp.name.toLowerCase().includes(filter) && !emp.role.toLowerCase().includes(filter) && !emp.department.toLowerCase().includes(filter)) continue;
-        const color = DEPT_COLORS[emp.department] ? DEPT_COLORS[emp.department].dot : '#999';
-        html += `<div class="admin-emp-item" onclick="openEditForm('${emp.id}')">
-          <div class="admin-emp-dot" style="background:${color}"></div>
-          <div class="admin-emp-info">
-            <div class="admin-emp-name">${emp.name}</div>
-            <div class="admin-emp-role">${emp.role} &middot; ${emp.department}</div>
-          </div>
-        </div>`;
+        const color = DEPT_COLORS[emp.department] || { bg: '#f1f5f9', text: '#64748b' };
+        const managerName = emp.managerId && employees[emp.managerId] ? employees[emp.managerId].name : '\u2014';
+        html += `<tr onclick="openEditForm('${emp.id}')">`;
+        html += `<td style="font-weight:600">${emp.name}</td>`;
+        html += `<td>${emp.role}</td>`;
+        html += `<td><span class="admin-dept-badge" style="background:${color.bg};color:${color.text}">${emp.department}</span></td>`;
+        html += `<td>${managerName}</td>`;
+        html += `<td>${emp.location || '\u2014'}</td>`;
+        html += `<td>${formatStartDate(emp.start) || '\u2014'}</td>`;
+        html += `<td><button class="admin-edit-btn" onclick="event.stopPropagation();openEditForm('${emp.id}')">Edit</button></td>`;
+        html += `</tr>`;
       }
+
+      html += '</tbody></table>';
       list.innerHTML = html;
     }
 
@@ -1618,18 +1693,21 @@
     }
 
     // ---- PAN & ZOOM ----
+    const MIN_SCALE = 0.3;
+    const MAX_SCALE = 2;
+
     function applyTransform() {
       const container = document.getElementById('chart-container');
       container.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
     }
 
     function zoomIn() {
-      scale = Math.min(scale * 1.2, 3);
+      scale = Math.min(scale * 1.2, MAX_SCALE);
       applyTransform();
     }
 
     function zoomOut() {
-      scale = Math.max(scale * 0.8, 0.2);
+      scale = Math.max(scale * 0.8, MIN_SCALE);
       applyTransform();
     }
 
@@ -1649,7 +1727,7 @@
       const vw = canvas.clientWidth;
       const vh = canvas.clientHeight;
 
-      scale = Math.min(vw / cw, vh / ch, 1) * 0.9;
+      scale = Math.max(Math.min(vw / cw, vh / ch, 1) * 0.9, MIN_SCALE);
       translateX = (vw - cw * scale) / 2;
       translateY = (vh - ch * scale) / 2;
       applyTransform();
@@ -1757,7 +1835,7 @@
       const mouseX = e.clientX - rect.left;
       const mouseY = e.clientY - rect.top;
 
-      const newScale = Math.max(0.2, Math.min(3, scale * delta));
+      const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale * delta));
       const ratio = newScale / scale;
 
       translateX = mouseX - ratio * (mouseX - translateX);
@@ -1808,7 +1886,7 @@
           const cx = midX - rect.left;
           const cy = midY - rect.top;
 
-          const newScale = Math.max(0.2, Math.min(3, scale * (dist / lastTouchDist)));
+          const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale * (dist / lastTouchDist)));
           const ratio = newScale / scale;
           translateX = cx - ratio * (cx - translateX);
           translateY = cy - ratio * (cy - translateY);
