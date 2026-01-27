@@ -151,6 +151,45 @@
       font-weight: 700;
     }
 
+    /* ---- VIEW TABS ---- */
+    #view-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 8px 24px;
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      flex-shrink: 0;
+    }
+
+    .view-tab {
+      padding: 5px 14px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      color: #64748b;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+
+    .view-tab:hover {
+      background: #f8fafc;
+      color: #334155;
+      border-color: #cbd5e1;
+    }
+
+    .view-tab.active {
+      background: #0f172a;
+      color: #f8fafc;
+      border-color: #0f172a;
+    }
+
+    .view-tab.active:hover {
+      background: #1e293b;
+    }
+
     /* ---- MAIN CONTENT ---- */
     #main {
       flex: 1;
@@ -938,6 +977,17 @@
         display: none;
       }
 
+      /* View tabs */
+      #view-tabs {
+        padding: 6px 12px;
+        gap: 4px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        scrollbar-width: none;
+      }
+      #view-tabs::-webkit-scrollbar { display: none; }
+      .view-tab { flex-shrink: 0; font-size: 11px; padding: 4px 10px; }
+
       /* Viewport: edge-to-edge */
       #viewport {
         margin: 0;
@@ -1048,6 +1098,13 @@
 
   <div id="stats"></div>
 
+  <div id="view-tabs">
+    <button class="view-tab active" data-view="org" onclick="switchView('org')">All Company</button>
+    <button class="view-tab" data-view="delivery" onclick="switchView('delivery')">Delivery</button>
+    <button class="view-tab" data-view="productDev" onclick="switchView('productDev')">Product Dev</button>
+    <button class="view-tab" data-view="sales" onclick="switchView('sales')">Sales</button>
+  </div>
+
   <div id="main">
     <div id="viewport">
       <div id="canvas">
@@ -1112,6 +1169,20 @@
         <input type="text" id="form-start" placeholder="e.g. Jan 13, 2023" />
         <span style="font-size:11px; color:#94a3b8; margin-top:2px;">Format: Mon DD, YYYY</span>
       </div>
+      <div style="border-top:1px solid #e2e8f0;margin:18px 0 14px;"></div>
+      <div style="font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Workflow Roles</div>
+      <div class="form-group">
+        <label>Delivery</label>
+        <input type="text" id="form-delivery" placeholder="e.g. Build Lead (leave blank if not in workflow)" />
+      </div>
+      <div class="form-group">
+        <label>Product Dev</label>
+        <input type="text" id="form-productdev" placeholder="e.g. Sprint Planning (leave blank if not in workflow)" />
+      </div>
+      <div class="form-group">
+        <label>Sales</label>
+        <input type="text" id="form-sales" placeholder="e.g. Tech Demo (leave blank if not in workflow)" />
+      </div>
       <div class="form-buttons">
         <button id="form-delete-btn" class="btn-danger" onclick="deleteEmployee()" style="margin-right:auto">Delete</button>
         <button onclick="closeEditForm()">Cancel</button>
@@ -1154,7 +1225,7 @@
   <script>
     // ---- CONFIG ----
     // Paste your deployed Apps Script Web App URL here (see AppsScript.gs for setup instructions)
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwiv7YnsXWPKA8PGYiVObZPTeDSxhLdeiPFtRO8BTqUxSlYYiNfqb5IGwpICf4wfvgF/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxTGJGdUfzMzIlrgwraTT56Pe6Sz_gl1F6XMBoGhrFXxzb3P_1gyQKOEBeFpHXCBt1g/exec';
 
     const DEPT_COLORS = {
       'Exec':   { border: '#6366f1', bg: '#eef2ff', text: '#4338ca', dot: '#6366f1' },
@@ -1167,7 +1238,15 @@
       'IT':     { border: '#64748b', bg: '#f1f5f9', text: '#334155', dot: '#64748b' },
     };
 
+    // ---- WORKFLOWS ----
+    const WORKFLOWS = {
+      delivery: { label: 'Delivery', field: 'deliveryRole' },
+      productDev: { label: 'Product Dev', field: 'productDevRole' },
+      sales: { label: 'Sales', field: 'salesRole' },
+    };
+
     // ---- STATE ----
+    let currentView = 'org';
     let scale = 1;
     let translateX = 0;
     let translateY = 0;
@@ -1264,6 +1343,14 @@
       if (emp.start) rows += `<div class="detail-row"><div class="detail-label">Start Date</div><div class="detail-value">${formatStartDate(emp.start)}</div></div>`;
       if (emp.years) rows += `<div class="detail-row"><div class="detail-label">Years</div><div class="detail-value">${formatYears(emp.years)}</div></div>`;
 
+      const wfEntries = [];
+      if (emp.deliveryRole) wfEntries.push(`Delivery: ${emp.deliveryRole}`);
+      if (emp.productDevRole) wfEntries.push(`Product Dev: ${emp.productDevRole}`);
+      if (emp.salesRole) wfEntries.push(`Sales: ${emp.salesRole}`);
+      if (wfEntries.length > 0) {
+        rows += `<div class="detail-row"><div class="detail-label">Workflows</div><div class="detail-value">${wfEntries.join('<br>')}</div></div>`;
+      }
+
       document.getElementById('detail-body').innerHTML = rows;
       document.getElementById('detail-edit-btn').style.display = adminUnlocked ? '' : 'none';
       document.getElementById('detail-overlay').classList.add('open');
@@ -1350,21 +1437,99 @@
       return name.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
     }
 
+    // ---- WORKFLOW FILTERED TREE ----
+    function buildFilteredTree(emps, workflowField) {
+      const filtered = {};
+      for (const id in emps) {
+        if (emps[id][workflowField]) {
+          filtered[id] = emps[id];
+        }
+      }
+
+      const cMap = {};
+      const roots = [];
+
+      for (const id in filtered) {
+        const emp = filtered[id];
+        // Walk up the original tree to find nearest ancestor in the filtered set
+        let ancestorId = emp.managerId;
+        while (ancestorId && emps[ancestorId] && !filtered[ancestorId]) {
+          ancestorId = emps[ancestorId].managerId;
+        }
+
+        if (ancestorId && filtered[ancestorId]) {
+          if (!cMap[ancestorId]) cMap[ancestorId] = [];
+          cMap[ancestorId].push(emp);
+        } else {
+          roots.push(emp);
+        }
+      }
+
+      let root = roots[0] || null;
+      if (roots.length > 1) {
+        roots.sort((a, b) => countReports(b.id, cMap) - countReports(a.id, cMap));
+        root = roots[0];
+        for (let i = 1; i < roots.length; i++) {
+          if (!cMap[root.id]) cMap[root.id] = [];
+          cMap[root.id].push(roots[i]);
+        }
+      }
+
+      for (const id in cMap) {
+        cMap[id].sort((a, b) => {
+          const aHasKids = cMap[a.id] ? 1 : 0;
+          const bHasKids = cMap[b.id] ? 1 : 0;
+          if (bHasKids !== aHasKids) return bHasKids - aHasKids;
+          return a.name.localeCompare(b.name);
+        });
+      }
+
+      return { root, childrenMap: cMap };
+    }
+
+    function switchView(view) {
+      currentView = view;
+      document.querySelectorAll('.view-tab').forEach(t => {
+        t.classList.toggle('active', t.getAttribute('data-view') === view);
+      });
+      rebuild();
+    }
+
     // ---- REBUILD & RE-RENDER ----
     function rebuild() {
-      const result = buildTree(employees);
+      let result;
+      if (currentView === 'org') {
+        result = buildTree(employees);
+      } else {
+        const wf = WORKFLOWS[currentView];
+        result = buildFilteredTree(employees, wf.field);
+      }
       rootEmp = result.root;
       childrenMap = result.childrenMap;
 
-      renderStats(employees, childrenMap);
+      renderStats(currentView === 'org' ? employees : getFilteredEmps(), childrenMap);
       const container = document.getElementById('chart-container');
-      container.innerHTML = renderNode(rootEmp, childrenMap);
+      if (rootEmp) {
+        container.innerHTML = renderNode(rootEmp, childrenMap);
+      } else {
+        container.innerHTML = '<div style="padding:60px;text-align:center;color:#94a3b8;font-size:14px;">No employees assigned to this workflow yet.<br>Add workflow roles in the Admin panel.</div>';
+      }
       renderLegend();
       renderAdminList();
 
       requestAnimationFrame(() => {
         requestAnimationFrame(() => centerChart());
       });
+    }
+
+    function getFilteredEmps() {
+      if (currentView === 'org') return employees;
+      const field = WORKFLOWS[currentView].field;
+      const result = {};
+      for (const id in employees) {
+        if (employees[id][field]) result[id] = employees[id];
+      }
+      return result;
     }
 
     // ---- STATS ----
@@ -1424,10 +1589,17 @@
       const badgeHTML = totalReports > 0
         ? `<div class="count-badge" title="${totalReports} total reports">${totalReports}</div>`
         : '';
+
+      let roleDisplay = emp.role;
+      if (currentView !== 'org' && WORKFLOWS[currentView]) {
+        const wfRole = emp[WORKFLOWS[currentView].field];
+        if (wfRole) roleDisplay = wfRole;
+      }
+
       return `<div class="node ${deptClass(emp.department)}" data-id="${emp.id}" data-name="${emp.name.toLowerCase()}">
         ${badgeHTML}
         <div class="name">${emp.name}</div>
-        <div class="role">${emp.role}</div>
+        <div class="role">${roleDisplay}</div>
         <div class="dept">${emp.department}</div>
       </div>`;
     }
@@ -1511,6 +1683,7 @@
       html += '<th>Reports To</th>';
       html += '<th>Location</th>';
       html += '<th>Start Date</th>';
+      html += '<th>Workflows</th>';
       html += '<th></th>';
       html += '</tr></thead><tbody>';
 
@@ -1518,6 +1691,12 @@
         if (filter && !emp.name.toLowerCase().includes(filter) && !emp.role.toLowerCase().includes(filter) && !emp.department.toLowerCase().includes(filter)) continue;
         const color = DEPT_COLORS[emp.department] || { bg: '#f1f5f9', text: '#64748b' };
         const managerName = emp.managerId && employees[emp.managerId] ? employees[emp.managerId].name : '\u2014';
+
+        const wfBadges = [];
+        if (emp.deliveryRole) wfBadges.push('<span style="background:#dbeafe;color:#1e40af;font-size:10px;font-weight:600;padding:1px 6px;border-radius:8px;white-space:nowrap">DEL</span>');
+        if (emp.productDevRole) wfBadges.push('<span style="background:#fce7f3;color:#9d174d;font-size:10px;font-weight:600;padding:1px 6px;border-radius:8px;white-space:nowrap">PD</span>');
+        if (emp.salesRole) wfBadges.push('<span style="background:#fef3c7;color:#92400e;font-size:10px;font-weight:600;padding:1px 6px;border-radius:8px;white-space:nowrap">SAL</span>');
+
         html += `<tr onclick="openEditForm('${emp.id}')">`;
         html += `<td style="font-weight:600">${emp.name}</td>`;
         html += `<td>${emp.role}</td>`;
@@ -1525,6 +1704,7 @@
         html += `<td>${managerName}</td>`;
         html += `<td>${emp.location || '\u2014'}</td>`;
         html += `<td>${formatStartDate(emp.start) || '\u2014'}</td>`;
+        html += `<td style="display:flex;gap:3px">${wfBadges.length > 0 ? wfBadges.join('') : '\u2014'}</td>`;
         html += `<td><button class="admin-edit-btn" onclick="event.stopPropagation();openEditForm('${emp.id}')">Edit</button></td>`;
         html += `</tr>`;
       }
@@ -1557,6 +1737,9 @@
       document.getElementById('form-delete-btn').style.display = '';
       document.getElementById('form-location').value = emp.location || '';
       document.getElementById('form-start').value = formatStartDate(emp.start);
+      document.getElementById('form-delivery').value = emp.deliveryRole || '';
+      document.getElementById('form-productdev').value = emp.productDevRole || '';
+      document.getElementById('form-sales').value = emp.salesRole || '';
 
       populateManagerDropdown(empId);
       document.getElementById('form-manager').value = emp.managerId || '';
@@ -1573,6 +1756,9 @@
       document.getElementById('form-delete-btn').style.display = 'none';
       document.getElementById('form-location').value = '';
       document.getElementById('form-start').value = '';
+      document.getElementById('form-delivery').value = '';
+      document.getElementById('form-productdev').value = '';
+      document.getElementById('form-sales').value = '';
 
       populateManagerDropdown(null);
       document.getElementById('form-manager').value = '';
@@ -1592,6 +1778,9 @@
       const managerId = document.getElementById('form-manager').value;
       const location = document.getElementById('form-location').value.trim();
       const start = document.getElementById('form-start').value.trim();
+      const deliveryRole = document.getElementById('form-delivery').value.trim();
+      const productDevRole = document.getElementById('form-productdev').value.trim();
+      const salesRole = document.getElementById('form-sales').value.trim();
 
       if (!name) { showToast('Name is required'); return; }
       if (!role) { showToast('Role is required'); return; }
@@ -1618,7 +1807,7 @@
         }
       }
 
-      employees[newId] = { id: newId, name, role, department: dept, managerId, location, start, years: existingYears };
+      employees[newId] = { id: newId, name, role, department: dept, managerId, location, start, years: existingYears, deliveryRole, productDevRole, salesRole };
 
       closeEditForm();
       rebuild();
