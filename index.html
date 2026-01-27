@@ -1094,11 +1094,7 @@
   <script>
     // ---- CONFIG ----
     // Paste your deployed Apps Script Web App URL here (see AppsScript.gs for setup instructions)
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwiv7YnsXWPKA8PGYiVObZPTeDSxhLdeiPFtRO8BTqUxSlYYiNfqb5IGwpICf4wfvgF/exec'; // e.g. 'https://script.google.com/macros/s/XXXXX/exec'
-
-    // Fallback: Sheets API (read-only, used if APPS_SCRIPT_URL is not set)
-    const SPREADSHEET_ID = '1o_0n8K7dqYrW0ytjRBUN0AUIe1uJQe_-j4bRJof-MI4';
-    const API_KEY = 'AIzaSyAv6nCz3plTICq4biUMmh9YKGOtkFOx-qI';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwiv7YnsXWPKA8PGYiVObZPTeDSxhLdeiPFtRO8BTqUxSlYYiNfqb5IGwpICf4wfvgF/exec';
 
     const DEPT_COLORS = {
       'Exec':   { border: '#6366f1', bg: '#eef2ff', text: '#4338ca', dot: '#6366f1' },
@@ -1225,40 +1221,11 @@
 
     // ---- FETCH DATA ----
     async function fetchData() {
-      if (APPS_SCRIPT_URL) {
-        // Use Apps Script API
-        const res = await fetch(APPS_SCRIPT_URL);
-        if (!res.ok) throw new Error(`Apps Script returned ${res.status}`);
-        const data = await res.json();
-        if (!data.success) throw new Error(data.error || 'Failed to load data');
-        return data.employees;
-      } else {
-        // Fallback: Sheets API (read-only)
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/A1:H100?key=${API_KEY}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`API returned ${res.status}: ${res.statusText}`);
-        const data = await res.json();
-        return parseRows(data.values);
-      }
-    }
-
-    function parseRows(rows) {
-      const emps = [];
-      for (let i = 1; i < rows.length; i++) {
-        const row = rows[i];
-        if (!row || !row[0]) continue;
-        emps.push({
-          id: row[0],
-          name: row[1] || '',
-          role: row[2] || '',
-          department: row[3] || '',
-          managerId: row[4] || '',
-          location: row[5] || '',
-          start: row[6] || '',
-          years: row[7] || '',
-        });
-      }
-      return emps;
+      const res = await fetch(APPS_SCRIPT_URL);
+      if (!res.ok) throw new Error(`Apps Script returned ${res.status}`);
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'Failed to load data');
+      return data.employees;
     }
 
     function indexEmployees(empList) {
@@ -1621,21 +1588,6 @@
 
     // ---- SAVE TO GOOGLE SHEETS (via Apps Script) ----
     async function saveToSheet() {
-      if (!APPS_SCRIPT_URL) {
-        showToast('Set APPS_SCRIPT_URL in the source to enable saving');
-        alert(
-          'To enable saving, deploy the Apps Script and paste the URL.\n\n' +
-          '1. Open your Google Sheet\n' +
-          '2. Go to Extensions > Apps Script\n' +
-          '3. Paste the code from AppsScript.gs\n' +
-          '4. Click Deploy > New deployment\n' +
-          '5. Type: Web app, Execute as: Me, Access: Anyone\n' +
-          '6. Copy the Web App URL\n' +
-          '7. Paste it into APPS_SCRIPT_URL in index.html'
-        );
-        return;
-      }
-
       markSaving();
 
       const sorted = Object.values(employees).sort((a, b) => a.name.localeCompare(b.name));
