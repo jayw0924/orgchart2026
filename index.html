@@ -1199,9 +1199,10 @@
       if (match) {
         adminUnlocked = true;
         sessionStorage.setItem('admin_unlocked', '1');
+        const cb = _passwordCallback;
         closePasswordModal();
         showToast('Admin access granted');
-        if (_passwordCallback) _passwordCallback();
+        if (cb) cb();
       } else {
         document.getElementById('password-error').textContent = 'Incorrect password';
         document.getElementById('password-input').value = '';
