@@ -924,6 +924,49 @@
 
     #password-buttons button:hover { background: #f8fafc; border-color: #cbd5e1; }
 
+    /* ---- DASHBOARD ---- */
+    #dashboard {
+      display: none;
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      background: #f1f5f9;
+    }
+
+    #dashboard.open {
+      display: block;
+    }
+
+    .dash-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 16px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .dash-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+    }
+
+    .dash-card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .dash-chart-wrap {
+      position: relative;
+      width: 100%;
+      height: 260px;
+    }
+
     /* ---- MOBILE ---- */
     @media (max-width: 768px) {
       /* Toolbar: two-row layout */
@@ -1008,6 +1051,11 @@
 
       .legend-item { font-size: 9px; }
 
+      /* Dashboard on mobile */
+      #dashboard { padding: 12px; }
+      .dash-grid { grid-template-columns: 1fr; gap: 12px; }
+      .dash-chart-wrap { height: 220px; }
+
       /* Admin table on mobile */
       #admin-header { padding: 14px 16px; }
       #admin-header h2 { font-size: 16px; }
@@ -1075,6 +1123,7 @@
       .connector-down { height: 10px; }
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -1093,6 +1142,7 @@
     <h1>Org Chart 2026</h1>
     <input type="text" id="search-box" placeholder="Search employees..." />
     <button onclick="resetView()">Reset View</button>
+    <button onclick="switchView('dashboard')">Dashboard</button>
     <button id="btn-admin" onclick="toggleAdmin()">Admin</button>
   </div>
 
@@ -1103,6 +1153,7 @@
     <button class="view-tab" data-view="delivery" onclick="switchView('delivery')">Delivery</button>
     <button class="view-tab" data-view="productDev" onclick="switchView('productDev')">Product Dev</button>
     <button class="view-tab" data-view="sales" onclick="switchView('sales')">Sales</button>
+    <button class="view-tab" data-view="dashboard" onclick="switchView('dashboard')">Dashboard</button>
   </div>
 
   <div id="main">
@@ -1111,6 +1162,31 @@
         <div id="chart-container"></div>
       </div>
       <div id="legend"></div>
+    </div>
+
+    <div id="dashboard">
+      <div class="dash-grid">
+        <div class="dash-card">
+          <div class="dash-card-title">Department Breakdown</div>
+          <div class="dash-chart-wrap"><canvas id="chart-dept"></canvas></div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-title">Location Distribution</div>
+          <div class="dash-chart-wrap"><canvas id="chart-location"></canvas></div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-title">Tenure Distribution</div>
+          <div class="dash-chart-wrap"><canvas id="chart-tenure"></canvas></div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-title">Workflow Participation</div>
+          <div class="dash-chart-wrap"><canvas id="chart-workflows"></canvas></div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-title">Manager Span</div>
+          <div class="dash-chart-wrap"><canvas id="chart-span"></canvas></div>
+        </div>
+      </div>
     </div>
 
     <div id="admin-panel">
@@ -1525,16 +1601,241 @@
       return { root, childrenMap: cMap };
     }
 
+    // ---- DASHBOARD ----
+    let dashCharts = [];
+
+    function destroyDashCharts() {
+      dashCharts.forEach(c => c.destroy());
+      dashCharts = [];
+    }
+
+    function renderDashboard() {
+      destroyDashCharts();
+
+      const emps = Object.values(employees);
+      if (emps.length === 0) return;
+
+      const chartFont = { family: "'Inter', sans-serif" };
+      const gridColor = '#f1f5f9';
+      const tickColor = '#64748b';
+
+      // Shared defaults
+      Chart.defaults.font.family = "'Inter', sans-serif";
+      Chart.defaults.font.size = 11;
+      Chart.defaults.color = '#64748b';
+
+      // --- 1. Department Breakdown (Doughnut) ---
+      const deptCounts = {};
+      emps.forEach(e => { deptCounts[e.department] = (deptCounts[e.department] || 0) + 1; });
+      const deptLabels = Object.keys(deptCounts).sort((a, b) => deptCounts[b] - deptCounts[a]);
+      const deptData = deptLabels.map(d => deptCounts[d]);
+      const deptColors = deptLabels.map(d => DEPT_COLORS[d] ? DEPT_COLORS[d].border : '#94a3b8');
+
+      dashCharts.push(new Chart(document.getElementById('chart-dept'), {
+        type: 'doughnut',
+        data: {
+          labels: deptLabels,
+          datasets: [{
+            data: deptData,
+            backgroundColor: deptColors,
+            borderWidth: 2,
+            borderColor: '#fff',
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '55%',
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: { padding: 12, usePointStyle: true, pointStyleWidth: 10, font: { size: 11, weight: '500' } }
+            },
+            tooltip: {
+              callbacks: {
+                label: ctx => ` ${ctx.label}: ${ctx.raw} (${Math.round(ctx.raw / emps.length * 100)}%)`
+              }
+            }
+          }
+        }
+      }));
+
+      // --- 2. Location Distribution (Horizontal Bar) ---
+      const locCounts = {};
+      emps.forEach(e => {
+        const loc = e.location || 'Not specified';
+        locCounts[loc] = (locCounts[loc] || 0) + 1;
+      });
+      const locLabels = Object.keys(locCounts).sort((a, b) => locCounts[b] - locCounts[a]);
+      const locData = locLabels.map(l => locCounts[l]);
+
+      dashCharts.push(new Chart(document.getElementById('chart-location'), {
+        type: 'bar',
+        data: {
+          labels: locLabels,
+          datasets: [{
+            data: locData,
+            backgroundColor: '#6366f1',
+            borderRadius: 4,
+            barThickness: locLabels.length > 10 ? 14 : 22,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          indexAxis: 'y',
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: ctx => ` ${ctx.raw} employees` } }
+          },
+          scales: {
+            x: { grid: { color: gridColor }, ticks: { precision: 0 } },
+            y: { grid: { display: false } }
+          }
+        }
+      }));
+
+      // --- 3. Tenure Distribution (Histogram) ---
+      const buckets = { '<1 yr': 0, '1-2 yr': 0, '2-3 yr': 0, '3-5 yr': 0, '5+ yr': 0 };
+      emps.forEach(e => {
+        const y = parseFloat(e.years);
+        if (isNaN(y)) return;
+        if (y < 1) buckets['<1 yr']++;
+        else if (y < 2) buckets['1-2 yr']++;
+        else if (y < 3) buckets['2-3 yr']++;
+        else if (y < 5) buckets['3-5 yr']++;
+        else buckets['5+ yr']++;
+      });
+
+      dashCharts.push(new Chart(document.getElementById('chart-tenure'), {
+        type: 'bar',
+        data: {
+          labels: Object.keys(buckets),
+          datasets: [{
+            data: Object.values(buckets),
+            backgroundColor: ['#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#047857'],
+            borderRadius: 4,
+            barThickness: 36,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: ctx => ` ${ctx.raw} employees` } }
+          },
+          scales: {
+            x: { grid: { display: false } },
+            y: { grid: { color: gridColor }, ticks: { precision: 0 }, beginAtZero: true }
+          }
+        }
+      }));
+
+      // --- 4. Workflow Participation ---
+      const wfCounts = { 'Delivery': 0, 'Product Dev': 0, 'Sales': 0 };
+      emps.forEach(e => {
+        if (e.deliveryRole) wfCounts['Delivery']++;
+        if (e.productDevRole) wfCounts['Product Dev']++;
+        if (e.salesRole) wfCounts['Sales']++;
+      });
+      const multiWf = emps.filter(e => [e.deliveryRole, e.productDevRole, e.salesRole].filter(Boolean).length > 1).length;
+
+      dashCharts.push(new Chart(document.getElementById('chart-workflows'), {
+        type: 'bar',
+        data: {
+          labels: [...Object.keys(wfCounts), 'Multi-Workflow'],
+          datasets: [{
+            data: [...Object.values(wfCounts), multiWf],
+            backgroundColor: ['#3b82f6', '#ec4899', '#f59e0b', '#8b5cf6'],
+            borderRadius: 4,
+            barThickness: 36,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: ctx => ` ${ctx.raw} employees` } }
+          },
+          scales: {
+            x: { grid: { display: false } },
+            y: { grid: { color: gridColor }, ticks: { precision: 0 }, beginAtZero: true }
+          }
+        }
+      }));
+
+      // --- 5. Manager Span (Direct Reports per Manager) ---
+      const treeResult = buildTree(employees);
+      const orgCMap = treeResult.childrenMap;
+      const managers = [];
+      for (const id in orgCMap) {
+        if (orgCMap[id].length > 0 && employees[id]) {
+          managers.push({ name: employees[id].name, count: orgCMap[id].length });
+        }
+      }
+      managers.sort((a, b) => b.count - a.count);
+      const topManagers = managers.slice(0, 15);
+
+      dashCharts.push(new Chart(document.getElementById('chart-span'), {
+        type: 'bar',
+        data: {
+          labels: topManagers.map(m => m.name),
+          datasets: [{
+            data: topManagers.map(m => m.count),
+            backgroundColor: topManagers.map(m => m.count >= 8 ? '#ef4444' : m.count >= 5 ? '#f59e0b' : '#10b981'),
+            borderRadius: 4,
+            barThickness: topManagers.length > 10 ? 14 : 22,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          indexAxis: 'y',
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: ctx => ` ${ctx.raw} direct reports` } }
+          },
+          scales: {
+            x: { grid: { color: gridColor }, ticks: { precision: 0 } },
+            y: { grid: { display: false }, ticks: { font: { size: 10 } } }
+          }
+        }
+      }));
+    }
+
     function switchView(view) {
       currentView = view;
       document.querySelectorAll('.view-tab').forEach(t => {
         t.classList.toggle('active', t.getAttribute('data-view') === view);
       });
-      rebuild();
+
+      const viewport = document.getElementById('viewport');
+      const dashboard = document.getElementById('dashboard');
+
+      if (view === 'dashboard') {
+        viewport.style.display = 'none';
+        dashboard.classList.add('open');
+        const treeResult = buildTree(employees);
+        renderStats(employees, treeResult.childrenMap);
+        renderDashboard();
+      } else {
+        viewport.style.display = '';
+        dashboard.classList.remove('open');
+        rebuild();
+      }
     }
 
     // ---- REBUILD & RE-RENDER ----
     function rebuild() {
+      if (currentView === 'dashboard') {
+        renderStats(employees, buildTree(employees).childrenMap);
+        renderAdminList();
+        renderDashboard();
+        return;
+      }
+
       let result;
       if (currentView === 'org') {
         result = buildTree(employees);
