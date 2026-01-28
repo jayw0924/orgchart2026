@@ -1170,18 +1170,33 @@
         <span style="font-size:11px; color:#94a3b8; margin-top:2px;">Format: Mon DD, YYYY</span>
       </div>
       <div style="border-top:1px solid #e2e8f0;margin:18px 0 14px;"></div>
-      <div style="font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Workflow Roles</div>
+      <div style="font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Workflow Assignments</div>
+      <div style="font-size:10px;font-weight:600;color:#94a3b8;margin-bottom:6px;">DELIVERY</div>
       <div class="form-group">
-        <label>Delivery</label>
+        <label>Role</label>
         <input type="text" id="form-delivery" placeholder="e.g. Build Lead (leave blank if not in workflow)" />
       </div>
       <div class="form-group">
-        <label>Product Dev</label>
+        <label>Reports To</label>
+        <select id="form-delivery-manager"></select>
+      </div>
+      <div style="font-size:10px;font-weight:600;color:#94a3b8;margin:10px 0 6px;">PRODUCT DEV</div>
+      <div class="form-group">
+        <label>Role</label>
         <input type="text" id="form-productdev" placeholder="e.g. Sprint Planning (leave blank if not in workflow)" />
       </div>
       <div class="form-group">
-        <label>Sales</label>
+        <label>Reports To</label>
+        <select id="form-productdev-manager"></select>
+      </div>
+      <div style="font-size:10px;font-weight:600;color:#94a3b8;margin:10px 0 6px;">SALES</div>
+      <div class="form-group">
+        <label>Role</label>
         <input type="text" id="form-sales" placeholder="e.g. Tech Demo (leave blank if not in workflow)" />
+      </div>
+      <div class="form-group">
+        <label>Reports To</label>
+        <select id="form-sales-manager"></select>
       </div>
       <div class="form-buttons">
         <button id="form-delete-btn" class="btn-danger" onclick="deleteEmployee()" style="margin-right:auto">Delete</button>
@@ -1225,7 +1240,7 @@
   <script>
     // ---- CONFIG ----
     // Paste your deployed Apps Script Web App URL here (see AppsScript.gs for setup instructions)
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxTGJGdUfzMzIlrgwraTT56Pe6Sz_gl1F6XMBoGhrFXxzb3P_1gyQKOEBeFpHXCBt1g/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZktbMis3VRwmwWzXylN2Bl_b70zTGtaGS42rgoIvId8Ql3MLTGcOUj4k0DE7hXXki/exec';
 
     const DEPT_COLORS = {
       'Exec':   { border: '#6366f1', bg: '#eef2ff', text: '#4338ca', dot: '#6366f1' },
@@ -1240,9 +1255,9 @@
 
     // ---- WORKFLOWS ----
     const WORKFLOWS = {
-      delivery: { label: 'Delivery', field: 'deliveryRole' },
-      productDev: { label: 'Product Dev', field: 'productDevRole' },
-      sales: { label: 'Sales', field: 'salesRole' },
+      delivery: { label: 'Delivery', field: 'deliveryRole', managerField: 'deliveryManagerId' },
+      productDev: { label: 'Product Dev', field: 'productDevRole', managerField: 'productDevManagerId' },
+      sales: { label: 'Sales', field: 'salesRole', managerField: 'salesManagerId' },
     };
 
     // ---- STATE ----
@@ -1344,9 +1359,21 @@
       if (emp.years) rows += `<div class="detail-row"><div class="detail-label">Years</div><div class="detail-value">${formatYears(emp.years)}</div></div>`;
 
       const wfEntries = [];
-      if (emp.deliveryRole) wfEntries.push(`Delivery: ${emp.deliveryRole}`);
-      if (emp.productDevRole) wfEntries.push(`Product Dev: ${emp.productDevRole}`);
-      if (emp.salesRole) wfEntries.push(`Sales: ${emp.salesRole}`);
+      if (emp.deliveryRole) {
+        let entry = `Delivery: ${emp.deliveryRole}`;
+        if (emp.deliveryManagerId && employees[emp.deliveryManagerId]) entry += ` <span style="color:#64748b">→ ${employees[emp.deliveryManagerId].name}</span>`;
+        wfEntries.push(entry);
+      }
+      if (emp.productDevRole) {
+        let entry = `Product Dev: ${emp.productDevRole}`;
+        if (emp.productDevManagerId && employees[emp.productDevManagerId]) entry += ` <span style="color:#64748b">→ ${employees[emp.productDevManagerId].name}</span>`;
+        wfEntries.push(entry);
+      }
+      if (emp.salesRole) {
+        let entry = `Sales: ${emp.salesRole}`;
+        if (emp.salesManagerId && employees[emp.salesManagerId]) entry += ` <span style="color:#64748b">→ ${employees[emp.salesManagerId].name}</span>`;
+        wfEntries.push(entry);
+      }
       if (wfEntries.length > 0) {
         rows += `<div class="detail-row"><div class="detail-label">Workflows</div><div class="detail-value">${wfEntries.join('<br>')}</div></div>`;
       }
@@ -1438,7 +1465,7 @@
     }
 
     // ---- WORKFLOW FILTERED TREE ----
-    function buildFilteredTree(emps, workflowField) {
+    function buildFilteredTree(emps, workflowField, workflowManagerField) {
       const filtered = {};
       for (const id in emps) {
         if (emps[id][workflowField]) {
@@ -1451,17 +1478,28 @@
 
       for (const id in filtered) {
         const emp = filtered[id];
-        // Walk up the original tree to find nearest ancestor in the filtered set
-        let ancestorId = emp.managerId;
-        while (ancestorId && emps[ancestorId] && !filtered[ancestorId]) {
-          ancestorId = emps[ancestorId].managerId;
-        }
+        const wfManager = workflowManagerField ? emp[workflowManagerField] : '';
 
-        if (ancestorId && filtered[ancestorId]) {
-          if (!cMap[ancestorId]) cMap[ancestorId] = [];
-          cMap[ancestorId].push(emp);
-        } else {
+        if (wfManager && filtered[wfManager]) {
+          // Workflow-specific manager is in the filtered set — use directly
+          if (!cMap[wfManager]) cMap[wfManager] = [];
+          cMap[wfManager].push(emp);
+        } else if (wfManager) {
+          // Workflow manager set but not in this workflow — treat as root
           roots.push(emp);
+        } else {
+          // No workflow manager — fall back to org chart ancestor walking
+          let ancestorId = emp.managerId;
+          while (ancestorId && emps[ancestorId] && !filtered[ancestorId]) {
+            ancestorId = emps[ancestorId].managerId;
+          }
+
+          if (ancestorId && filtered[ancestorId]) {
+            if (!cMap[ancestorId]) cMap[ancestorId] = [];
+            cMap[ancestorId].push(emp);
+          } else {
+            roots.push(emp);
+          }
         }
       }
 
@@ -1502,7 +1540,7 @@
         result = buildTree(employees);
       } else {
         const wf = WORKFLOWS[currentView];
-        result = buildFilteredTree(employees, wf.field);
+        result = buildFilteredTree(employees, wf.field, wf.managerField);
       }
       rootEmp = result.root;
       childrenMap = result.childrenMap;
@@ -1714,10 +1752,10 @@
     }
 
     // ---- EDIT FORM ----
-    function populateManagerDropdown(excludeId) {
-      const select = document.getElementById('form-manager');
+    function populateManagerDropdown(elementId, excludeId, emptyLabel) {
+      const select = document.getElementById(elementId);
       const sorted = Object.values(employees).sort((a, b) => a.name.localeCompare(b.name));
-      let html = `<option value="">(None - top of org)</option>`;
+      let html = `<option value="">${emptyLabel || '(None)'}</option>`;
       for (const emp of sorted) {
         if (emp.id === excludeId) continue;
         html += `<option value="${emp.id}">${emp.name} (${emp.role})</option>`;
@@ -1741,8 +1779,15 @@
       document.getElementById('form-productdev').value = emp.productDevRole || '';
       document.getElementById('form-sales').value = emp.salesRole || '';
 
-      populateManagerDropdown(empId);
+      populateManagerDropdown('form-manager', empId, '(None - top of org)');
       document.getElementById('form-manager').value = emp.managerId || '';
+
+      populateManagerDropdown('form-delivery-manager', empId, '(None — use org chart)');
+      document.getElementById('form-delivery-manager').value = emp.deliveryManagerId || '';
+      populateManagerDropdown('form-productdev-manager', empId, '(None — use org chart)');
+      document.getElementById('form-productdev-manager').value = emp.productDevManagerId || '';
+      populateManagerDropdown('form-sales-manager', empId, '(None — use org chart)');
+      document.getElementById('form-sales-manager').value = emp.salesManagerId || '';
 
       document.getElementById('edit-overlay').classList.add('open');
     }
@@ -1760,8 +1805,15 @@
       document.getElementById('form-productdev').value = '';
       document.getElementById('form-sales').value = '';
 
-      populateManagerDropdown(null);
+      populateManagerDropdown('form-manager', null, '(None - top of org)');
       document.getElementById('form-manager').value = '';
+
+      populateManagerDropdown('form-delivery-manager', null, '(None — use org chart)');
+      document.getElementById('form-delivery-manager').value = '';
+      populateManagerDropdown('form-productdev-manager', null, '(None — use org chart)');
+      document.getElementById('form-productdev-manager').value = '';
+      populateManagerDropdown('form-sales-manager', null, '(None — use org chart)');
+      document.getElementById('form-sales-manager').value = '';
 
       document.getElementById('edit-overlay').classList.add('open');
     }
@@ -1779,8 +1831,11 @@
       const location = document.getElementById('form-location').value.trim();
       const start = document.getElementById('form-start').value.trim();
       const deliveryRole = document.getElementById('form-delivery').value.trim();
+      const deliveryManagerId = document.getElementById('form-delivery-manager').value;
       const productDevRole = document.getElementById('form-productdev').value.trim();
+      const productDevManagerId = document.getElementById('form-productdev-manager').value;
       const salesRole = document.getElementById('form-sales').value.trim();
+      const salesManagerId = document.getElementById('form-sales-manager').value;
 
       if (!name) { showToast('Name is required'); return; }
       if (!role) { showToast('Role is required'); return; }
@@ -1794,9 +1849,10 @@
         // Update any employees that reported to the old ID
         if (originalId !== newId) {
           for (const id in employees) {
-            if (employees[id].managerId === originalId) {
-              employees[id].managerId = newId;
-            }
+            if (employees[id].managerId === originalId) employees[id].managerId = newId;
+            if (employees[id].deliveryManagerId === originalId) employees[id].deliveryManagerId = newId;
+            if (employees[id].productDevManagerId === originalId) employees[id].productDevManagerId = newId;
+            if (employees[id].salesManagerId === originalId) employees[id].salesManagerId = newId;
           }
         }
       } else {
@@ -1807,7 +1863,7 @@
         }
       }
 
-      employees[newId] = { id: newId, name, role, department: dept, managerId, location, start, years: existingYears, deliveryRole, productDevRole, salesRole };
+      employees[newId] = { id: newId, name, role, department: dept, managerId, location, start, years: existingYears, deliveryRole, deliveryManagerId, productDevRole, productDevManagerId, salesRole, salesManagerId };
 
       closeEditForm();
       rebuild();
@@ -1827,6 +1883,13 @@
         for (const report of reports) {
           employees[report.id].managerId = emp.managerId;
         }
+      }
+
+      // Clear any workflow manager references to the deleted employee
+      for (const id in employees) {
+        if (employees[id].deliveryManagerId === originalId) employees[id].deliveryManagerId = '';
+        if (employees[id].productDevManagerId === originalId) employees[id].productDevManagerId = '';
+        if (employees[id].salesManagerId === originalId) employees[id].salesManagerId = '';
       }
 
       delete employees[originalId];

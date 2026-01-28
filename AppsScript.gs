@@ -38,7 +38,10 @@ function doGet(e) {
         years: row[7] || '',
         deliveryRole: row[8] || '',
         productDevRole: row[9] || '',
-        salesRole: row[10] || ''
+        salesRole: row[10] || '',
+        deliveryManagerId: row[11] || '',
+        productDevManagerId: row[12] || '',
+        salesManagerId: row[13] || ''
       });
     }
 
@@ -67,15 +70,15 @@ function doPost(e) {
       // Clear everything except header
       var lastRow = sheet.getLastRow();
       if (lastRow > 1) {
-        sheet.getRange(2, 1, lastRow - 1, 11).clearContent();
+        sheet.getRange(2, 1, lastRow - 1, 14).clearContent();
       }
 
       // Write employee data
       if (employees.length > 0) {
         var rows = employees.map(function(emp) {
-          return [emp.id, emp.name, emp.role, emp.department, emp.managerId || '\u2014', emp.location || '', emp.start || '', emp.years || '', emp.deliveryRole || '', emp.productDevRole || '', emp.salesRole || ''];
+          return [emp.id, emp.name, emp.role, emp.department, emp.managerId || '\u2014', emp.location || '', emp.start || '', emp.years || '', emp.deliveryRole || '', emp.productDevRole || '', emp.salesRole || '', emp.deliveryManagerId || '', emp.productDevManagerId || '', emp.salesManagerId || ''];
         });
-        sheet.getRange(2, 1, rows.length, 11).setValues(rows);
+        sheet.getRange(2, 1, rows.length, 14).setValues(rows);
       }
 
       return ContentService
