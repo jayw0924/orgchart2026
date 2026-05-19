@@ -31,11 +31,10 @@ function doGet(e) {
         id: row[0],
         name: row[1],
         role: row[2],
-        department: row[3],
-        managerId: row[4] || '',
-        location: row[5] || '',
-        start: row[6] || '',
-        years: row[7] || ''
+        team: row[3],
+        location: row[4] || '',
+        start: row[5] || '',
+        years: row[6] || ''
       });
     }
 

@@ -31,11 +31,7 @@
       flex-shrink: 0;
     }
 
-    #toolbar-logo {
-      height: 32px;
-      width: auto;
-      object-fit: contain;
-    }
+    #toolbar-logo { height: 32px; width: auto; object-fit: contain; }
 
     #toolbar h1 {
       font-size: 18px;
@@ -75,7 +71,6 @@
     }
 
     #search-box::placeholder { color: #64748b; }
-
     #search-box:focus { border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.25); }
 
     /* ---- STATS BAR ---- */
@@ -90,327 +85,102 @@
       flex-wrap: wrap;
     }
 
-    .stat-item {
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-    }
+    .stat-item { display: flex; align-items: baseline; gap: 6px; }
+    .stat-value { font-size: 22px; font-weight: 700; color: #0f172a; }
+    .stat-label { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; }
+    .stat-divider { width: 1px; height: 28px; background: #e2e8f0; }
 
-    .stat-value {
-      font-size: 22px;
-      font-weight: 700;
-      color: #0f172a;
-    }
+    .team-stats { display: flex; gap: 12px; margin-left: auto; flex-wrap: wrap; }
+    .team-stat { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: #64748b; }
+    .team-stat-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .team-stat-count { color: #0f172a; font-weight: 700; }
 
-    .stat-label {
-      font-size: 11px;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-weight: 500;
-    }
+    /* ---- MAIN ---- */
+    #main { flex: 1; display: flex; overflow: hidden; min-height: 0; }
 
-    .stat-divider {
-      width: 1px;
-      height: 28px;
-      background: #e2e8f0;
-    }
-
-    .dept-stats {
-      display: flex;
-      gap: 12px;
-      margin-left: auto;
-    }
-
-    .dept-stat {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 11px;
-      font-weight: 600;
-      color: #64748b;
-    }
-
-    .dept-stat-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
-
-    .dept-stat-count {
-      color: #0f172a;
-      font-weight: 700;
-    }
-
-    /* ---- MAIN CONTENT ---- */
-    #main {
+    /* ---- PODS ---- */
+    #pods-container {
       flex: 1;
+      overflow-y: auto;
+      padding: 24px;
       display: flex;
-      overflow: hidden;
-      min-height: 0;
+      flex-direction: column;
+      gap: 20px;
     }
 
-    /* ---- VIEWPORT ---- */
-    #viewport {
-      flex: 1;
-      margin: 16px;
-      border: 1px solid #e2e8f0;
+    .pod-section {
+      background: #fff;
       border-radius: 12px;
-      background:
-        radial-gradient(circle, #cbd5e1 0.5px, transparent 0.5px);
-      background-size: 24px 24px;
-      background-color: #f1f5f9;
       overflow: hidden;
-      position: relative;
-      box-shadow: inset 0 2px 8px rgba(0,0,0,0.04);
+      flex-shrink: 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
     }
 
-    #canvas {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      cursor: grab;
-      touch-action: none;
-    }
-
-    #canvas.grabbing { cursor: grabbing; }
-
-    #chart-container {
-      transform-origin: 0 0;
-      will-change: transform;
-      padding: 40px;
-      display: inline-block;
-    }
-
-    /* ---- LEGEND ---- */
-    #legend {
-      position: absolute;
-      bottom: 12px;
-      left: 12px;
-      z-index: 10;
-      background: #0f172a;
-      backdrop-filter: blur(8px);
-      border-radius: 8px;
-      padding: 8px 14px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    .pod-header {
+      padding: 10px 18px;
       display: flex;
-      flex-wrap: wrap;
+      align-items: center;
       gap: 10px;
-      border: 1px solid rgba(255,255,255,0.08);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      border-left-width: 4px;
+      border-left-style: solid;
     }
 
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 10px;
-      font-weight: 500;
-      color: #94a3b8;
+    .pod-name {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
     }
 
-    .legend-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
+    .pod-count { font-size: 11px; color: #94a3b8; font-weight: 500; }
 
-    /* ---- TREE LAYOUT ---- */
-    .tree {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+    .pod-cards { display: flex; flex-wrap: wrap; gap: 10px; padding: 14px 18px; }
 
-    .tree .children {
-      display: flex;
-      justify-content: center;
-      position: relative;
-    }
-
-    .tree .child-branch {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      padding: 14px 4px 0;
-    }
-
-    .tree .child-branch::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: calc(50% - 1px);
-      width: 2px;
-      height: 14px;
-      background: #cbd5e1;
-    }
-
-    .tree .child-branch::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      height: 2px;
-      background: #cbd5e1;
-    }
-
-    .tree .children > .child-branch:first-child::after {
-      left: 50%;
-      right: 0;
-    }
-
-    .tree .children > .child-branch:last-child::after {
-      left: 0;
-      right: 50%;
-    }
-
-    .tree .children > .child-branch:only-child::after {
-      display: none;
-    }
-
-    .tree .children > .child-branch:not(:first-child):not(:last-child)::after {
-      left: 0;
-      right: 0;
-    }
-
-    .connector-down {
-      width: 2px;
-      height: 14px;
-      background: #cbd5e1;
-      margin: 0 auto;
-    }
-
-    .role-group {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
-
-    /* ---- NODE CARDS ---- */
+    /* ---- PERSON CARDS ---- */
     .node {
       background: #fff;
-      border-radius: 10px;
-      padding: 10px 12px;
-      width: 148px;
-      text-align: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+      border-radius: 8px;
+      padding: 10px 14px;
+      width: 180px;
       border-left: 3px solid #cbd5e1;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
       cursor: pointer;
-      position: relative;
+      transition: transform 0.15s, box-shadow 0.15s;
     }
 
     .node:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 0 0 2px rgba(16,185,129,0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.11);
     }
 
     .node.highlight {
-      box-shadow: 0 0 0 3px #10b981, 0 8px 24px rgba(0,0,0,0.15);
-      transform: translateY(-2px);
+      box-shadow: 0 0 0 2px #10b981, 0 4px 12px rgba(0,0,0,0.1);
+      transform: translateY(-1px);
     }
 
-    .node.dimmed { opacity: 0.25; }
+    .node.dimmed { opacity: 0.18; pointer-events: none; }
 
-    .node .name {
-      font-weight: 700;
-      font-size: 11.5px;
-      margin-bottom: 2px;
-      color: #0f172a;
-    }
-
-    .node .role {
-      font-size: 9.5px;
-      color: #64748b;
-      margin-bottom: 4px;
-    }
-
-    .node .dept {
-      font-size: 8px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      padding: 2px 7px;
-      border-radius: 8px;
-      display: inline-block;
-    }
-
-    .node .count-badge {
-      position: absolute;
-      top: -6px;
-      right: -6px;
-      background: #0f172a;
-      color: #fff;
-      font-size: 9px;
-      font-weight: 700;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
-
-    /* ---- DEPARTMENT COLORS ---- */
-    .dept-exec { border-left-color: #6366f1; }
-    .dept-exec .dept { background: #eef2ff; color: #4338ca; }
-
-    .dept-dev { border-left-color: #10b981; }
-    .dept-dev .dept { background: #ecfdf5; color: #047857; }
-
-    .dept-3d { border-left-color: #f59e0b; }
-    .dept-3d .dept { background: #fffbeb; color: #b45309; }
-
-    .dept-qa { border-left-color: #ef4444; }
-    .dept-qa .dept { background: #fef2f2; color: #b91c1c; }
-
-    .dept-mgmt { border-left-color: #8b5cf6; }
-    .dept-mgmt .dept { background: #f5f3ff; color: #6d28d9; }
-
-    .dept-design { border-left-color: #ec4899; }
-    .dept-design .dept { background: #fdf2f8; color: #be185d; }
-
-    .dept-hr { border-left-color: #14b8a6; }
-    .dept-hr .dept { background: #f0fdfa; color: #0f766e; }
-
-    .dept-it { border-left-color: #64748b; }
-    .dept-it .dept { background: #f1f5f9; color: #334155; }
+    .node .name { font-weight: 600; font-size: 12px; color: #0f172a; margin-bottom: 3px; }
+    .node .role { font-size: 10.5px; color: #64748b; line-height: 1.3; }
 
     /* ---- LOADING / ERROR ---- */
     #loading {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #0f172a;
-      z-index: 1000;
-      flex-direction: column;
-      gap: 16px;
+      position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: #0f172a; z-index: 1000; flex-direction: column; gap: 16px;
     }
 
     .spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid #1e293b;
-      border-top-color: #10b981;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      width: 40px; height: 40px;
+      border: 4px solid #1e293b; border-top-color: #10b981;
+      border-radius: 50%; animation: spin 0.8s linear infinite;
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
     #error {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: #0f172a;
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      gap: 12px;
+      display: none; position: fixed; inset: 0; background: #0f172a; z-index: 1000;
+      justify-content: center; align-items: center; flex-direction: column; gap: 12px;
     }
 
     #error h2 { color: #ef4444; }
@@ -418,298 +188,99 @@
 
     /* ---- TOAST ---- */
     #toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: #0f172a;
-      color: #f1f5f9;
-      padding: 10px 20px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 500;
-      z-index: 600;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.3s, transform 0.3s;
-      pointer-events: none;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      position: fixed; bottom: 24px; right: 24px;
+      background: #0f172a; color: #f1f5f9; padding: 10px 20px;
+      border-radius: 10px; font-size: 13px; font-weight: 500; z-index: 600;
+      opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none; box-shadow: 0 8px 24px rgba(0,0,0,0.2);
     }
 
-    #toast.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    #toast.show { opacity: 1; transform: translateY(0); }
 
     /* ---- DETAIL POPUP ---- */
     #detail-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(15,23,42,0.5);
-      backdrop-filter: blur(4px);
-      z-index: 400;
-      align-items: center;
-      justify-content: center;
+      display: none; position: fixed; inset: 0;
+      background: rgba(15,23,42,0.5); backdrop-filter: blur(4px);
+      z-index: 400; align-items: center; justify-content: center;
     }
 
     #detail-overlay.open { display: flex; }
 
     #detail-card {
-      background: #fff;
-      border-radius: 14px;
-      padding: 0;
-      width: 380px;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.2);
-      overflow: hidden;
+      background: #fff; border-radius: 14px; padding: 0;
+      width: 380px; box-shadow: 0 24px 64px rgba(0,0,0,0.2); overflow: hidden;
     }
 
-    .detail-header {
-      padding: 24px 28px 16px;
-      border-bottom: 1px solid #f1f5f9;
-      position: relative;
-    }
+    .detail-header { padding: 24px 28px 16px; border-bottom: 1px solid #f1f5f9; position: relative; }
+    .detail-team-bar { position: absolute; top: 0; left: 0; right: 0; height: 4px; }
+    .detail-name { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 2px; }
+    .detail-role { font-size: 13px; color: #64748b; }
 
-    .detail-dept-bar {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-    }
+    .detail-body { padding: 16px 28px 24px; }
 
-    .detail-name {
-      font-size: 18px;
-      font-weight: 700;
-      color: #0f172a;
-      margin-bottom: 2px;
-    }
-
-    .detail-role {
-      font-size: 13px;
-      color: #64748b;
-    }
-
-    .detail-body {
-      padding: 16px 28px 24px;
-    }
-
-    .detail-row {
-      display: flex;
-      align-items: baseline;
-      padding: 8px 0;
-      border-bottom: 1px solid #f1f5f9;
-    }
-
+    .detail-row { display: flex; align-items: baseline; padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
     .detail-row:last-child { border-bottom: none; }
+    .detail-label { font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; width: 100px; flex-shrink: 0; }
+    .detail-value { font-size: 13px; color: #0f172a; }
 
-    .detail-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      width: 100px;
-      flex-shrink: 0;
-    }
-
-    .detail-value {
-      font-size: 13px;
-      color: #0f172a;
-    }
-
-    .detail-actions {
-      padding: 0 28px 20px;
-      display: flex;
-      gap: 8px;
-      justify-content: flex-end;
-    }
+    .detail-actions { padding: 0 28px 20px; display: flex; gap: 8px; justify-content: flex-end; }
 
     .detail-actions button {
-      padding: 7px 16px;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      background: #fff;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 500;
-      font-family: inherit;
-      color: #334155;
-      transition: all 0.15s;
+      padding: 7px 16px; border: 1px solid #e2e8f0; border-radius: 8px;
+      background: #fff; cursor: pointer; font-size: 12px; font-weight: 500;
+      font-family: inherit; color: #334155; transition: all 0.15s;
     }
 
     .detail-actions button:hover { background: #f8fafc; border-color: #cbd5e1; }
 
     /* ---- DASHBOARD ---- */
-    #dashboard {
-      display: none;
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px;
-      background: #f1f5f9;
-    }
-
-    #dashboard.open {
-      display: block;
-    }
+    #dashboard { display: none; flex: 1; overflow-y: auto; padding: 20px; background: #f1f5f9; }
+    #dashboard.open { display: block; }
 
     .dash-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-      gap: 16px;
-      max-width: 1400px;
-      margin: 0 auto;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 16px; max-width: 1400px; margin: 0 auto;
     }
 
-    .dash-card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 20px 24px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
-    }
-
-    .dash-card-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #0f172a;
-      margin-bottom: 16px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .dash-chart-wrap {
-      position: relative;
-      width: 100%;
-      height: 260px;
-    }
+    .dash-card { background: #fff; border-radius: 12px; padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04); }
+    .dash-card-title { font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .dash-chart-wrap { position: relative; width: 100%; height: 260px; }
 
     /* ---- MOBILE ---- */
     @media (max-width: 768px) {
-      /* Toolbar: two-row layout */
-      #toolbar {
-        padding: 10px 12px 8px;
-        gap: 0;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-
+      #toolbar { padding: 10px 12px 8px; gap: 0; flex-wrap: wrap; }
       #toolbar-logo { height: 24px; }
+      #toolbar h1 { font-size: 15px; margin-right: auto; margin-left: 8px; }
+      #toolbar button { padding: 5px 10px; font-size: 12px; margin-left: 6px; }
+      #search-box { order: 10; width: 100%; margin-top: 8px; font-size: 14px; padding: 8px 12px; }
 
-      #toolbar h1 {
-        font-size: 15px;
-        margin-right: auto;
-        margin-left: 8px;
-      }
-
-      #toolbar button {
-        padding: 5px 10px;
-        font-size: 12px;
-        margin-left: 6px;
-      }
-
-      #search-box {
-        order: 10;
-        width: 100%;
-        margin-top: 8px;
-        font-size: 14px;
-        padding: 8px 12px;
-      }
-
-      /* Stats bar: compact single row */
-      #stats {
-        padding: 8px 12px;
-        gap: 6px;
-        overflow-x: auto;
-        flex-wrap: nowrap;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-      }
-
+      #stats { padding: 8px 12px; gap: 6px; overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
       #stats::-webkit-scrollbar { display: none; }
-
       .stat-value { font-size: 15px; }
       .stat-label { font-size: 9px; letter-spacing: 0.3px; }
       .stat-divider { height: 18px; flex-shrink: 0; }
       .stat-item { flex-shrink: 0; }
+      .team-stats { display: none; }
 
-      .dept-stats {
-        display: none;
-      }
+      #pods-container { padding: 12px; gap: 12px; }
+      .pod-header { padding: 8px 14px; }
+      .pod-cards { padding: 10px 14px; gap: 8px; }
+      .node { width: 150px; padding: 8px 10px; }
+      .node .name { font-size: 11px; }
+      .node .role { font-size: 10px; }
 
-      /* Viewport: edge-to-edge */
-      #viewport {
-        margin: 0;
-        border-radius: 0;
-        border-left: none;
-        border-right: none;
-      }
-
-      /* Legend */
-      #legend {
-        bottom: 6px;
-        left: 6px;
-        padding: 6px 10px;
-        gap: 6px;
-        max-width: calc(100% - 12px);
-        border-radius: 6px;
-      }
-
-      .legend-item { font-size: 9px; }
-
-      /* Dashboard on mobile */
       #dashboard { padding: 12px; }
       .dash-grid { grid-template-columns: 1fr; gap: 12px; }
       .dash-chart-wrap { height: 220px; }
 
-      /* Detail popup */
-      #detail-card {
-        width: calc(100vw - 32px);
-        max-width: 380px;
-      }
-
-      /* Node cards */
-      .node {
-        width: 120px;
-        padding: 6px 8px;
-      }
-
-      .node .name { font-size: 10px; }
-      .node .role { font-size: 9px; }
-      .node .dept { font-size: 7.5px; }
-
-      .node .count-badge {
-        width: 16px;
-        height: 16px;
-        font-size: 8px;
-        top: -5px;
-        right: -5px;
-      }
-
-      /* Toast */
-      #toast {
-        left: 16px;
-        right: 16px;
-        bottom: 16px;
-        text-align: center;
-      }
+      #detail-card { width: calc(100vw - 32px); max-width: 380px; }
+      #toast { left: 16px; right: 16px; bottom: 16px; text-align: center; }
     }
 
     @media (max-width: 420px) {
       #toolbar h1 { font-size: 13px; }
       #toolbar-logo { height: 20px; }
-
-      .stat-item:nth-child(n+8) { display: none; }
-
-      .node {
-        width: 100px;
-        padding: 5px 6px;
-      }
-
-      .node .name { font-size: 9px; }
-      .node .role { font-size: 8px; }
-      .node .dept { font-size: 7px; padding: 1px 4px; }
-
-      .child-branch { padding: 10px 2px 0; }
-      .connector-down { height: 10px; }
+      .node { width: 130px; }
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
@@ -730,25 +301,19 @@
     <img id="toolbar-logo" src="logo.png" alt="3DSource" />
     <h1>Org Chart 2026</h1>
     <input type="text" id="search-box" placeholder="Search employees..." />
-    <button onclick="resetView()">Reset View</button>
     <button id="btn-dashboard" onclick="toggleDashboard()">Dashboard</button>
   </div>
 
   <div id="stats"></div>
 
   <div id="main">
-    <div id="viewport">
-      <div id="canvas">
-        <div id="chart-container"></div>
-      </div>
-      <div id="legend"></div>
-    </div>
+    <div id="pods-container"></div>
 
     <div id="dashboard">
       <div class="dash-grid">
         <div class="dash-card">
-          <div class="dash-card-title">Department Breakdown</div>
-          <div class="dash-chart-wrap"><canvas id="chart-dept"></canvas></div>
+          <div class="dash-card-title">Team Breakdown</div>
+          <div class="dash-chart-wrap"><canvas id="chart-team"></canvas></div>
         </div>
         <div class="dash-card">
           <div class="dash-card-title">Location Distribution</div>
@@ -758,20 +323,15 @@
           <div class="dash-card-title">Tenure Distribution</div>
           <div class="dash-chart-wrap"><canvas id="chart-tenure"></canvas></div>
         </div>
-        <div class="dash-card">
-          <div class="dash-card-title">Manager Span</div>
-          <div class="dash-chart-wrap"><canvas id="chart-span"></canvas></div>
-        </div>
       </div>
     </div>
-
   </div>
 
   <!-- Detail Popup -->
   <div id="detail-overlay" onclick="if(event.target===this)closeDetail()">
     <div id="detail-card">
       <div class="detail-header">
-        <div class="detail-dept-bar" id="detail-dept-bar"></div>
+        <div class="detail-team-bar" id="detail-team-bar"></div>
         <div class="detail-name" id="detail-name"></div>
         <div class="detail-role" id="detail-role"></div>
       </div>
@@ -786,30 +346,41 @@
 
   <script>
     // ---- CONFIG ----
-    // Paste your deployed Apps Script Web App URL here (see AppsScript.gs for setup instructions)
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZktbMis3VRwmwWzXylN2Bl_b70zTGtaGS42rgoIvId8Ql3MLTGcOUj4k0DE7hXXki/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwgTKBSXZZEHrwzgQQOqkUOy-HF4Y10Aayk-fBQmo_WFCefyEgQ8mm1igBeuEHAK1OF/exec';
 
-    const DEPT_COLORS = {
-      'Exec':   { border: '#6366f1', bg: '#eef2ff', text: '#4338ca', dot: '#6366f1' },
-      'Dev':    { border: '#10b981', bg: '#ecfdf5', text: '#047857', dot: '#10b981' },
-      '3D':     { border: '#f59e0b', bg: '#fffbeb', text: '#b45309', dot: '#f59e0b' },
-      'QA':     { border: '#ef4444', bg: '#fef2f2', text: '#b91c1c', dot: '#ef4444' },
-      'MGMT':   { border: '#8b5cf6', bg: '#f5f3ff', text: '#6d28d9', dot: '#8b5cf6' },
-      'Design': { border: '#ec4899', bg: '#fdf2f8', text: '#be185d', dot: '#ec4899' },
-      'HR':     { border: '#14b8a6', bg: '#f0fdfa', text: '#0f766e', dot: '#14b8a6' },
-      'IT':     { border: '#64748b', bg: '#f1f5f9', text: '#334155', dot: '#64748b' },
+    // Named team colors — edit keys to match your exact team names in the sheet
+    const TEAM_COLORS = {
+      'Leadership':             { border: '#6366f1', bg: '#eef2ff', text: '#4338ca', dot: '#6366f1' },
+      '3D Services':            { border: '#f59e0b', bg: '#fffbeb', text: '#b45309', dot: '#f59e0b' },
+      'Product & Engineering':  { border: '#10b981', bg: '#ecfdf5', text: '#047857', dot: '#10b981' },
+      'Design':                 { border: '#ec4899', bg: '#fdf2f8', text: '#be185d', dot: '#ec4899' },
+      'Operations':             { border: '#14b8a6', bg: '#f0fdfa', text: '#0f766e', dot: '#14b8a6' },
+      'Sales':                  { border: '#8b5cf6', bg: '#f5f3ff', text: '#6d28d9', dot: '#8b5cf6' },
     };
+
+    // Fallback colors for any team name not listed above
+    const FALLBACK_COLORS = [
+      { border: '#3b82f6', bg: '#eff6ff', text: '#1d4ed8', dot: '#3b82f6' },
+      { border: '#f97316', bg: '#fff7ed', text: '#c2410c', dot: '#f97316' },
+      { border: '#84cc16', bg: '#f7fee7', text: '#3f6212', dot: '#84cc16' },
+      { border: '#06b6d4', bg: '#ecfeff', text: '#0e7490', dot: '#06b6d4' },
+    ];
+    const _colorCache = {};
+    let _colorIdx = 0;
+
+    function getTeamColor(team) {
+      if (TEAM_COLORS[team]) return TEAM_COLORS[team];
+      if (!_colorCache[team]) {
+        _colorCache[team] = FALLBACK_COLORS[_colorIdx % FALLBACK_COLORS.length];
+        _colorIdx++;
+      }
+      return _colorCache[team];
+    }
 
     // ---- STATE ----
     let currentView = 'org';
-    let scale = 1;
-    let translateX = 0;
-    let translateY = 0;
-    let isDragging = false;
-    let dragStartX, dragStartY;
     let employees = {};
-    let childrenMap = {};
-    let rootEmp = null;
+
     // ---- TOAST ----
     function showToast(msg) {
       const t = document.getElementById('toast');
@@ -834,30 +405,20 @@
     }
 
     // ---- DETAIL POPUP ----
-    let detailEmpId = null;
-
     function openDetail(empId) {
       const emp = employees[empId];
       if (!emp) return;
-      detailEmpId = empId;
 
-      const color = DEPT_COLORS[emp.department] || { border: '#94a3b8' };
-      document.getElementById('detail-dept-bar').style.background = color.border;
+      const color = getTeamColor(emp.team);
+      document.getElementById('detail-team-bar').style.background = color.border;
       document.getElementById('detail-name').textContent = emp.name;
       document.getElementById('detail-role').textContent = emp.role;
 
-      const manager = emp.managerId && employees[emp.managerId]
-        ? employees[emp.managerId].name
-        : 'None';
-      const reports = (childrenMap[emp.id] || []).length;
-
       let rows = '';
-      rows += `<div class="detail-row"><div class="detail-label">Department</div><div class="detail-value">${emp.department}</div></div>`;
-      rows += `<div class="detail-row"><div class="detail-label">Reports To</div><div class="detail-value">${manager}</div></div>`;
-      rows += `<div class="detail-row"><div class="detail-label">Direct Reports</div><div class="detail-value">${reports}</div></div>`;
+      rows += `<div class="detail-row"><div class="detail-label">Team</div><div class="detail-value">${emp.team}</div></div>`;
       if (emp.location) rows += `<div class="detail-row"><div class="detail-label">Location</div><div class="detail-value">${emp.location}</div></div>`;
       if (emp.start) rows += `<div class="detail-row"><div class="detail-label">Start Date</div><div class="detail-value">${formatStartDate(emp.start)}</div></div>`;
-      if (emp.years) rows += `<div class="detail-row"><div class="detail-label">Years</div><div class="detail-value">${formatYears(emp.years)}</div></div>`;
+      if (emp.years) rows += `<div class="detail-row"><div class="detail-label">Tenure</div><div class="detail-value">${formatYears(emp.years)} yr</div></div>`;
 
       document.getElementById('detail-body').innerHTML = rows;
       document.getElementById('detail-overlay').classList.add('open');
@@ -865,7 +426,6 @@
 
     function closeDetail() {
       document.getElementById('detail-overlay').classList.remove('open');
-      detailEmpId = null;
     }
 
     // ---- FETCH DATA ----
@@ -880,58 +440,10 @@
     function indexEmployees(empList) {
       const emps = {};
       for (const emp of empList) {
+        emp.team = emp.team || 'Unassigned';
         emps[emp.id] = emp;
       }
       return emps;
-    }
-
-    function buildTree(emps) {
-      const cMap = {};
-      const roots = [];
-
-      for (const id in emps) {
-        const emp = emps[id];
-        const managerId = emp.managerId;
-        if (!managerId || managerId === '\u2014' || managerId === '-' || !emps[managerId]) {
-          roots.push(emp);
-        } else {
-          if (!cMap[managerId]) cMap[managerId] = [];
-          cMap[managerId].push(emp);
-        }
-      }
-
-      // Pick the root with the most reports; attach others as its direct reports
-      let root = roots[0] || null;
-      if (roots.length > 1) {
-        roots.sort((a, b) => countReports(b.id, cMap) - countReports(a.id, cMap));
-        root = roots[0];
-        for (let i = 1; i < roots.length; i++) {
-          if (!cMap[root.id]) cMap[root.id] = [];
-          cMap[root.id].push(roots[i]);
-        }
-      }
-
-      for (const id in cMap) {
-        cMap[id].sort((a, b) => {
-          const aHasKids = cMap[a.id] ? 1 : 0;
-          const bHasKids = cMap[b.id] ? 1 : 0;
-          if (bHasKids !== aHasKids) return bHasKids - aHasKids;
-          return a.name.localeCompare(b.name);
-        });
-      }
-
-      return { root, childrenMap: cMap };
-    }
-
-
-
-    function countReports(id, cMap) {
-      const direct = cMap[id] || [];
-      let total = direct.length;
-      for (const child of direct) {
-        total += countReports(child.id, cMap);
-      }
-      return total;
     }
 
     // ---- DASHBOARD ----
@@ -944,91 +456,57 @@
 
     function renderDashboard() {
       destroyDashCharts();
-
       const emps = Object.values(employees);
       if (emps.length === 0) return;
 
-      const chartFont = { family: "'Inter', sans-serif" };
-      const gridColor = '#f1f5f9';
-      const tickColor = '#64748b';
-
-      // Shared defaults
       Chart.defaults.font.family = "'Inter', sans-serif";
       Chart.defaults.font.size = 11;
       Chart.defaults.color = '#64748b';
+      const gridColor = '#f1f5f9';
 
-      // --- 1. Department Breakdown (Doughnut) ---
-      const deptCounts = {};
-      emps.forEach(e => { deptCounts[e.department] = (deptCounts[e.department] || 0) + 1; });
-      const deptLabels = Object.keys(deptCounts).sort((a, b) => deptCounts[b] - deptCounts[a]);
-      const deptData = deptLabels.map(d => deptCounts[d]);
-      const deptColors = deptLabels.map(d => DEPT_COLORS[d] ? DEPT_COLORS[d].border : '#94a3b8');
+      // 1. Team Breakdown
+      const teamCounts = {};
+      emps.forEach(e => { teamCounts[e.team] = (teamCounts[e.team] || 0) + 1; });
+      const teamLabels = Object.keys(teamCounts).sort((a, b) => teamCounts[b] - teamCounts[a]);
 
-      dashCharts.push(new Chart(document.getElementById('chart-dept'), {
+      dashCharts.push(new Chart(document.getElementById('chart-team'), {
         type: 'doughnut',
         data: {
-          labels: deptLabels,
+          labels: teamLabels,
           datasets: [{
-            data: deptData,
-            backgroundColor: deptColors,
-            borderWidth: 2,
-            borderColor: '#fff',
+            data: teamLabels.map(t => teamCounts[t]),
+            backgroundColor: teamLabels.map(t => getTeamColor(t).border),
+            borderWidth: 2, borderColor: '#fff',
           }]
         },
         options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: '55%',
+          responsive: true, maintainAspectRatio: false, cutout: '55%',
           plugins: {
-            legend: {
-              position: 'right',
-              labels: { padding: 12, usePointStyle: true, pointStyleWidth: 10, font: { size: 11, weight: '500' } }
-            },
-            tooltip: {
-              callbacks: {
-                label: ctx => ` ${ctx.label}: ${ctx.raw} (${Math.round(ctx.raw / emps.length * 100)}%)`
-              }
-            }
+            legend: { position: 'right', labels: { padding: 12, usePointStyle: true, pointStyleWidth: 10, font: { size: 11, weight: '500' } } },
+            tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} (${Math.round(ctx.raw / emps.length * 100)}%)` } }
           }
         }
       }));
 
-      // --- 2. Location Distribution (Horizontal Bar) ---
+      // 2. Location Distribution
       const locCounts = {};
-      emps.forEach(e => {
-        const loc = e.location || 'Not specified';
-        locCounts[loc] = (locCounts[loc] || 0) + 1;
-      });
+      emps.forEach(e => { const loc = e.location || 'Not specified'; locCounts[loc] = (locCounts[loc] || 0) + 1; });
       const locLabels = Object.keys(locCounts).sort((a, b) => locCounts[b] - locCounts[a]);
-      const locData = locLabels.map(l => locCounts[l]);
 
       dashCharts.push(new Chart(document.getElementById('chart-location'), {
         type: 'bar',
         data: {
           labels: locLabels,
-          datasets: [{
-            data: locData,
-            backgroundColor: '#6366f1',
-            borderRadius: 4,
-            barThickness: locLabels.length > 10 ? 14 : 22,
-          }]
+          datasets: [{ data: locLabels.map(l => locCounts[l]), backgroundColor: '#6366f1', borderRadius: 4, barThickness: locLabels.length > 10 ? 14 : 22 }]
         },
         options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          indexAxis: 'y',
-          plugins: {
-            legend: { display: false },
-            tooltip: { callbacks: { label: ctx => ` ${ctx.raw} employees` } }
-          },
-          scales: {
-            x: { grid: { color: gridColor }, ticks: { precision: 0 } },
-            y: { grid: { display: false } }
-          }
+          responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.raw} employees` } } },
+          scales: { x: { grid: { color: gridColor }, ticks: { precision: 0 } }, y: { grid: { display: false } } }
         }
       }));
 
-      // --- 3. Tenure Distribution (Histogram) ---
+      // 3. Tenure Distribution
       const buckets = { '<1 yr': 0, '1-2 yr': 0, '2-3 yr': 0, '3-5 yr': 0, '5+ yr': 0 };
       emps.forEach(e => {
         const y = parseFloat(e.years);
@@ -1044,66 +522,17 @@
         type: 'bar',
         data: {
           labels: Object.keys(buckets),
-          datasets: [{
-            data: Object.values(buckets),
-            backgroundColor: ['#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#047857'],
-            borderRadius: 4,
-            barThickness: 36,
-          }]
+          datasets: [{ data: Object.values(buckets), backgroundColor: ['#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#047857'], borderRadius: 4, barThickness: 36 }]
         },
         options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: { callbacks: { label: ctx => ` ${ctx.raw} employees` } }
-          },
-          scales: {
-            x: { grid: { display: false } },
-            y: { grid: { color: gridColor }, ticks: { precision: 0 }, beginAtZero: true }
-          }
-        }
-      }));
-
-      // --- 4. Manager Span (Direct Reports per Manager) ---
-      const treeResult = buildTree(employees);
-      const orgCMap = treeResult.childrenMap;
-      const managers = [];
-      for (const id in orgCMap) {
-        if (orgCMap[id].length > 0 && employees[id]) {
-          managers.push({ name: employees[id].name, count: orgCMap[id].length });
-        }
-      }
-      managers.sort((a, b) => b.count - a.count);
-      const topManagers = managers.slice(0, 15);
-
-      dashCharts.push(new Chart(document.getElementById('chart-span'), {
-        type: 'bar',
-        data: {
-          labels: topManagers.map(m => m.name),
-          datasets: [{
-            data: topManagers.map(m => m.count),
-            backgroundColor: topManagers.map(m => m.count >= 8 ? '#ef4444' : m.count >= 5 ? '#f59e0b' : '#10b981'),
-            borderRadius: 4,
-            barThickness: topManagers.length > 10 ? 14 : 22,
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          indexAxis: 'y',
-          plugins: {
-            legend: { display: false },
-            tooltip: { callbacks: { label: ctx => ` ${ctx.raw} direct reports` } }
-          },
-          scales: {
-            x: { grid: { color: gridColor }, ticks: { precision: 0 } },
-            y: { grid: { display: false }, ticks: { font: { size: 10 } } }
-          }
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.raw} employees` } } },
+          scales: { x: { grid: { display: false } }, y: { grid: { color: gridColor }, ticks: { precision: 0 }, beginAtZero: true } }
         }
       }));
     }
 
+    // ---- VIEW SWITCHING ----
     function toggleDashboard() {
       switchView(currentView === 'dashboard' ? 'org' : 'dashboard');
     }
@@ -1111,213 +540,112 @@
     function switchView(view) {
       currentView = view;
       const dashBtn = document.getElementById('btn-dashboard');
-      const viewport = document.getElementById('viewport');
+      const pods = document.getElementById('pods-container');
       const dashboard = document.getElementById('dashboard');
 
       if (view === 'dashboard') {
         if (dashBtn) dashBtn.textContent = 'Org Chart';
-        viewport.style.display = 'none';
+        pods.style.display = 'none';
         dashboard.classList.add('open');
-        const treeResult = buildTree(employees);
-        renderStats(employees, treeResult.childrenMap);
+        renderStats();
         renderDashboard();
       } else {
         if (dashBtn) dashBtn.textContent = 'Dashboard';
-        viewport.style.display = '';
+        pods.style.display = '';
         dashboard.classList.remove('open');
-        rebuild();
+        renderStats();
+        renderPods();
       }
-    }
-
-    // ---- REBUILD & RE-RENDER ----
-    function rebuild() {
-      if (currentView === 'dashboard') {
-        renderStats(employees, buildTree(employees).childrenMap);
-        renderDashboard();
-        return;
-      }
-
-      const result = buildTree(employees);
-      rootEmp = result.root;
-      childrenMap = result.childrenMap;
-
-      renderStats(employees, childrenMap);
-      const container = document.getElementById('chart-container');
-      if (rootEmp) {
-        container.innerHTML = renderNode(rootEmp, childrenMap);
-      } else {
-        container.innerHTML = '<div style="padding:60px;text-align:center;color:#94a3b8;font-size:14px;">No employees found.</div>';
-      }
-      renderLegend();
-
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => centerChart());
-      });
     }
 
     // ---- STATS ----
-    function renderStats(emps, cMap) {
-      const total = Object.keys(emps).length;
-      const deptCounts = {};
-      for (const id in emps) {
-        const d = emps[id].department;
-        deptCounts[d] = (deptCounts[d] || 0) + 1;
-      }
-      const numDepts = Object.keys(deptCounts).length;
-      let numManagers = 0;
-      for (const id in cMap) {
-        if (cMap[id].length > 0) numManagers++;
-      }
-      const roles = new Set();
-      let tenureSum = 0;
-      let tenureCount = 0;
-      for (const id in emps) {
-        roles.add(emps[id].role);
-        const y = parseFloat(emps[id].years);
+    function renderStats() {
+      const emps = Object.values(employees);
+      const total = emps.length;
+      const teams = new Set(emps.map(e => e.team));
+      const roles = new Set(emps.map(e => e.role));
+      let tenureSum = 0, tenureCount = 0;
+      emps.forEach(e => {
+        const y = parseFloat(e.years);
         if (!isNaN(y)) { tenureSum += y; tenureCount++; }
-      }
+      });
       const avgTenure = tenureCount > 0 ? (tenureSum / tenureCount).toFixed(1) : '—';
+
+      const teamCounts = {};
+      emps.forEach(e => { teamCounts[e.team] = (teamCounts[e.team] || 0) + 1; });
+      const sortedTeams = Object.entries(teamCounts).sort((a, b) => b[1] - a[1]);
 
       let html = '';
       html += `<div class="stat-item"><span class="stat-value">${total}</span><span class="stat-label">Headcount</span></div>`;
       html += `<div class="stat-divider"></div>`;
-      html += `<div class="stat-item"><span class="stat-value">${numDepts}</span><span class="stat-label">Departments</span></div>`;
-      html += `<div class="stat-divider"></div>`;
-      html += `<div class="stat-item"><span class="stat-value">${numManagers}</span><span class="stat-label">Managers</span></div>`;
+      html += `<div class="stat-item"><span class="stat-value">${teams.size}</span><span class="stat-label">Teams</span></div>`;
       html += `<div class="stat-divider"></div>`;
       html += `<div class="stat-item"><span class="stat-value">${roles.size}</span><span class="stat-label">Roles</span></div>`;
       html += `<div class="stat-divider"></div>`;
       html += `<div class="stat-item"><span class="stat-value">${avgTenure}<span style="font-size:12px;font-weight:400;color:#64748b"> yr</span></span><span class="stat-label">Avg Tenure</span></div>`;
-
-      html += `<div class="dept-stats">`;
-      const sortedDepts = Object.entries(deptCounts).sort((a, b) => b[1] - a[1]);
-      for (const [dept, count] of sortedDepts) {
-        const color = DEPT_COLORS[dept] ? DEPT_COLORS[dept].dot : '#94a3b8';
-        html += `<div class="dept-stat">
-          <div class="dept-stat-dot" style="background:${color}"></div>
-          ${dept} <span class="dept-stat-count">${count}</span>
-        </div>`;
+      html += `<div class="team-stats">`;
+      for (const [team, count] of sortedTeams) {
+        const color = getTeamColor(team);
+        html += `<div class="team-stat"><div class="team-stat-dot" style="background:${color.dot}"></div>${team} <span class="team-stat-count">${count}</span></div>`;
       }
       html += `</div>`;
       document.getElementById('stats').innerHTML = html;
     }
 
-    // ---- RENDER CHART ----
-    function deptClass(dept) {
-      return 'dept-' + dept.toLowerCase().replace(/\s+/g, '');
-    }
+    // ---- PODS RENDERING ----
+    function renderPods() {
+      const container = document.getElementById('pods-container');
 
-    function renderCardHTML(emp, cMap) {
-      const totalReports = countReports(emp.id, cMap);
-      const badgeHTML = totalReports > 0
-        ? `<div class="count-badge" title="${totalReports} total reports">${totalReports}</div>`
-        : '';
-
-      return `<div class="node ${deptClass(emp.department)}" data-id="${emp.id}" data-name="${emp.name.toLowerCase()}">
-        ${badgeHTML}
-        <div class="name">${emp.name}</div>
-        <div class="role">${emp.role}</div>
-        <div class="dept">${emp.department}</div>
-      </div>`;
-    }
-
-    function renderNode(emp, cMap) {
-      const kids = cMap[emp.id] || [];
-      let html = `<div class="tree">`;
-      html += renderCardHTML(emp, cMap);
-
-      if (kids.length > 0) {
-        const managers = kids.filter(k => cMap[k.id] && cMap[k.id].length > 0);
-        const leaves = kids.filter(k => !cMap[k.id] || cMap[k.id].length === 0);
-        const roleGroups = {};
-        for (const leaf of leaves) {
-          const role = leaf.role;
-          if (!roleGroups[role]) roleGroups[role] = [];
-          roleGroups[role].push(leaf);
-        }
-        const groupedLeaves = Object.values(roleGroups);
-
-        html += `<div class="connector-down"></div>`;
-        html += `<div class="children">`;
-        for (const child of managers) {
-          html += `<div class="child-branch">`;
-          html += renderNode(child, cMap);
-          html += `</div>`;
-        }
-        for (const group of groupedLeaves) {
-          html += `<div class="child-branch">`;
-          html += `<div class="role-group">`;
-          for (const leaf of group) {
-            html += renderCardHTML(leaf, cMap);
-          }
-          html += `</div>`;
-          html += `</div>`;
-        }
-        html += `</div>`;
+      const grouped = {};
+      for (const id in employees) {
+        const emp = employees[id];
+        if (!grouped[emp.team]) grouped[emp.team] = [];
+        grouped[emp.team].push(emp);
       }
 
-      html += `</div>`;
-      return html;
-    }
+      // Known teams render in TEAM_COLORS definition order; unknown teams alphabetically after
+      const knownOrder = Object.keys(TEAM_COLORS);
+      const allTeams = Object.keys(grouped);
+      const sortedTeams = [
+        ...knownOrder.filter(t => grouped[t]),
+        ...allTeams.filter(t => !TEAM_COLORS[t]).sort(),
+      ];
 
-    function renderLegend() {
-      const legend = document.getElementById('legend');
       let html = '';
-      for (const dept in DEPT_COLORS) {
-        const c = DEPT_COLORS[dept];
-        html += `<div class="legend-item">
-          <div class="legend-dot" style="background:${c.dot}"></div>
-          ${dept}
-        </div>`;
+      for (const team of sortedTeams) {
+        const members = grouped[team].sort((a, b) => a.name.localeCompare(b.name));
+        const color = getTeamColor(team);
+        html += `<div class="pod-section">`;
+        html += `<div class="pod-header" style="border-left-color:${color.border}; background:${color.bg}">`;
+        html += `<span class="pod-name" style="color:${color.text}">${team}</span>`;
+        html += `<span class="pod-count">${members.length} ${members.length === 1 ? 'member' : 'members'}</span>`;
+        html += `</div><div class="pod-cards">`;
+        for (const emp of members) {
+          html += `<div class="node" data-id="${emp.id}" data-name="${emp.name.toLowerCase()}" data-team="${emp.team.toLowerCase()}" style="border-left-color:${color.border}" onclick="openDetail('${emp.id}')">`;
+          html += `<div class="name">${emp.name}</div>`;
+          html += `<div class="role">${emp.role}</div>`;
+          html += `</div>`;
+        }
+        html += `</div></div>`;
       }
-      legend.innerHTML = html;
-    }
 
-    // ---- PAN & ZOOM ----
-    const MIN_SCALE = 0.3;
-    const MAX_SCALE = 2;
-
-    function applyTransform() {
-      const container = document.getElementById('chart-container');
-      container.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
-    }
-
-    function resetView() {
-      scale = 1;
-      translateX = 0;
-      translateY = 0;
-      applyTransform();
-      centerChart();
-    }
-
-    function centerChart() {
-      const canvas = document.getElementById('canvas');
-      const container = document.getElementById('chart-container');
-      const cw = container.scrollWidth;
-      const ch = container.scrollHeight;
-      const vw = canvas.clientWidth;
-      const vh = canvas.clientHeight;
-
-      scale = Math.max(Math.min(vw / cw, vh / ch, 1) * 0.9, MIN_SCALE);
-      translateX = (vw - cw * scale) / 2;
-      translateY = (vh - ch * scale) / 2;
-      applyTransform();
+      container.innerHTML = html || '<div style="padding:40px;text-align:center;color:#94a3b8;">No employees found.</div>';
     }
 
     // ---- SEARCH ----
     function handleSearch(query) {
       const nodes = document.querySelectorAll('.node');
       if (!query) {
-        nodes.forEach(n => { n.classList.remove('highlight', 'dimmed'); });
+        nodes.forEach(n => n.classList.remove('highlight', 'dimmed'));
         return;
       }
       const q = query.toLowerCase();
       let hasMatch = false;
       nodes.forEach(n => {
-        const name = n.getAttribute('data-name');
-        const role = n.querySelector('.role').textContent.toLowerCase();
-        const dept = n.querySelector('.dept').textContent.toLowerCase();
-        if (name.includes(q) || role.includes(q) || dept.includes(q)) {
+        const name = n.getAttribute('data-name') || '';
+        const role = n.querySelector('.role')?.textContent.toLowerCase() || '';
+        const team = n.getAttribute('data-team') || '';
+        if (name.includes(q) || role.includes(q) || team.includes(q)) {
           n.classList.add('highlight');
           n.classList.remove('dimmed');
           hasMatch = true;
@@ -1326,9 +654,7 @@
           n.classList.add('dimmed');
         }
       });
-      if (!hasMatch) {
-        nodes.forEach(n => { n.classList.remove('highlight', 'dimmed'); });
-      }
+      if (!hasMatch) nodes.forEach(n => n.classList.remove('highlight', 'dimmed'));
     }
 
     // ---- INIT ----
@@ -1336,25 +662,9 @@
       try {
         const empList = await fetchData();
         employees = indexEmployees(empList);
-        const result = buildTree(employees);
-        rootEmp = result.root;
-        childrenMap = result.childrenMap;
-
-        if (!rootEmp) throw new Error('Could not find the root of the org tree (CEO with no manager).');
-
-        renderStats(employees, childrenMap);
-
-        const container = document.getElementById('chart-container');
-        container.innerHTML = renderNode(rootEmp, childrenMap);
-
-        renderLegend();
-
+        renderStats();
+        renderPods();
         document.getElementById('loading').style.display = 'none';
-
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => centerChart());
-        });
-
       } catch (err) {
         document.getElementById('loading').style.display = 'none';
         document.getElementById('error').style.display = 'flex';
@@ -1364,136 +674,14 @@
     }
 
     // ---- EVENT LISTENERS ----
-    const canvas = document.getElementById('canvas');
+    document.getElementById('search-box').addEventListener('input', e => handleSearch(e.target.value.trim()));
 
-    // Click on card to open detail (but not during drag)
-    let mouseDownPos = null;
-    canvas.addEventListener('mousedown', (e) => {
-      mouseDownPos = { x: e.clientX, y: e.clientY };
-      isDragging = true;
-      dragStartX = e.clientX - translateX;
-      dragStartY = e.clientY - translateY;
-      canvas.classList.add('grabbing');
-    });
-
-    window.addEventListener('mousemove', (e) => {
-      if (!isDragging) return;
-      translateX = e.clientX - dragStartX;
-      translateY = e.clientY - dragStartY;
-      applyTransform();
-    });
-
-    window.addEventListener('mouseup', (e) => {
-      isDragging = false;
-      canvas.classList.remove('grabbing');
-
-      // If mouse barely moved, treat as click on card
-      if (mouseDownPos && Math.abs(e.clientX - mouseDownPos.x) < 4 && Math.abs(e.clientY - mouseDownPos.y) < 4) {
-        const node = e.target.closest('.node');
-        if (node) {
-          const empId = node.getAttribute('data-id');
-          if (empId) openDetail(empId);
-        }
-      }
-      mouseDownPos = null;
-    });
-
-    canvas.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? 0.9 : 1.1;
-      const rect = canvas.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
-
-      const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale * delta));
-      const ratio = newScale / scale;
-
-      translateX = mouseX - ratio * (mouseX - translateX);
-      translateY = mouseY - ratio * (mouseY - translateY);
-      scale = newScale;
-      applyTransform();
-    }, { passive: false });
-
-    // ---- TOUCH EVENTS ----
-    let touchStartPos = null;
-    let lastTouchDist = 0;
-    let touchMoved = false;
-
-    canvas.addEventListener('touchstart', (e) => {
-      if (e.touches.length === 1) {
-        const t = e.touches[0];
-        touchStartPos = { x: t.clientX, y: t.clientY };
-        dragStartX = t.clientX - translateX;
-        dragStartY = t.clientY - translateY;
-        touchMoved = false;
-      } else if (e.touches.length === 2) {
-        const dx = e.touches[0].clientX - e.touches[1].clientX;
-        const dy = e.touches[0].clientY - e.touches[1].clientY;
-        lastTouchDist = Math.sqrt(dx * dx + dy * dy);
-        touchMoved = true;
-      }
-    }, { passive: true });
-
-    canvas.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-      if (e.touches.length === 1 && touchStartPos) {
-        const t = e.touches[0];
-        if (Math.abs(t.clientX - touchStartPos.x) > 4 || Math.abs(t.clientY - touchStartPos.y) > 4) {
-          touchMoved = true;
-        }
-        translateX = t.clientX - dragStartX;
-        translateY = t.clientY - dragStartY;
-        applyTransform();
-      } else if (e.touches.length === 2) {
-        const dx = e.touches[0].clientX - e.touches[1].clientX;
-        const dy = e.touches[0].clientY - e.touches[1].clientY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (lastTouchDist > 0) {
-          const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-          const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-          const rect = canvas.getBoundingClientRect();
-          const cx = midX - rect.left;
-          const cy = midY - rect.top;
-
-          const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale * (dist / lastTouchDist)));
-          const ratio = newScale / scale;
-          translateX = cx - ratio * (cx - translateX);
-          translateY = cy - ratio * (cy - translateY);
-          scale = newScale;
-          applyTransform();
-        }
-        lastTouchDist = dist;
-      }
-    }, { passive: false });
-
-    canvas.addEventListener('touchend', (e) => {
-      if (e.touches.length === 0) {
-        // Tap to open detail
-        if (!touchMoved && touchStartPos) {
-          const node = e.target.closest('.node');
-          if (node) {
-            const empId = node.getAttribute('data-id');
-            if (empId) openDetail(empId);
-          }
-        }
-        touchStartPos = null;
-        lastTouchDist = 0;
-      }
-    }, { passive: true });
-
-    document.getElementById('search-box').addEventListener('input', (e) => {
-      handleSearch(e.target.value.trim());
-    });
-
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener('keydown', e => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
         e.preventDefault();
         document.getElementById('search-box').focus();
       }
-      if (e.key === 'Escape') {
-        closeDetail();
-      }
+      if (e.key === 'Escape') closeDetail();
     });
 
     init();
