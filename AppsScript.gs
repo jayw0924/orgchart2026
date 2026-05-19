@@ -35,13 +35,7 @@ function doGet(e) {
         managerId: row[4] || '',
         location: row[5] || '',
         start: row[6] || '',
-        years: row[7] || '',
-        deliveryRole: row[8] || '',
-        productDevRole: row[9] || '',
-        salesRole: row[10] || '',
-        deliveryManagerId: row[11] || '',
-        productDevManagerId: row[12] || '',
-        salesManagerId: row[13] || ''
+        years: row[7] || ''
       });
     }
 
@@ -56,46 +50,3 @@ function doGet(e) {
   }
 }
 
-function doPost(e) {
-  try {
-    var payload = JSON.parse(e.postData.contents);
-    var action = payload.action;
-
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-
-    if (action === 'save_all') {
-      // Full replace: clear sheet and rewrite all data
-      var employees = payload.employees;
-
-      // Clear everything except header
-      var lastRow = sheet.getLastRow();
-      if (lastRow > 1) {
-        sheet.getRange(2, 1, lastRow - 1, 14).clearContent();
-      }
-
-      // Write employee data
-      if (employees.length > 0) {
-        var rows = employees.map(function(emp) {
-          return [emp.id, emp.name, emp.role, emp.department, emp.managerId || '\u2014', emp.location || '', emp.start || '', emp.years || '', emp.deliveryRole || '', emp.productDevRole || '', emp.salesRole || '', emp.deliveryManagerId || '', emp.productDevManagerId || '', emp.salesManagerId || ''];
-        });
-        sheet.getRange(2, 1, rows.length, 14).setValues(rows);
-      }
-
-      return ContentService
-        .createTextOutput(JSON.stringify({
-          success: true,
-          message: 'Saved ' + employees.length + ' employees'
-        }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-
-    return ContentService
-      .createTextOutput(JSON.stringify({ success: false, error: 'Unknown action: ' + action }))
-      .setMimeType(ContentService.MimeType.JSON);
-
-  } catch (err) {
-    return ContentService
-      .createTextOutput(JSON.stringify({ success: false, error: err.message }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
